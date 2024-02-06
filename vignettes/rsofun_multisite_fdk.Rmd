@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   fig.height = 5
 )
 
+remotes::install_github("geco-bern/rsofun")
 library(rsofun)
 library(dplyr)
 library(ggplot2)
