@@ -23,5 +23,5 @@ library(dplyr)
 library(ggplot2)
 ```
 
-This vignette demonstrates how rsofun is used for an ensemble of simulations for multiple sites with site-level forcing data prepared by FluxDataKit.
+This vignette demonstrates how rsofun is used for an ensemble of simulations for multiple sites with site-level forcing data prepared by FluxDataKit. 
 
