@@ -1,15 +1,15 @@
-Package: RTemplate
-Title: Your project
+Package: rsofundemo
+Title: Demonstration workflows with rsofun
 Version: 0.1
 Authors@R: 
     person(
-      given = "John",
-      family = "Doe",
-      email = "john.doe@example.com",
+      given = "Benjamin",
+      family = "Stocker",
+      email = "benjamin.stocker@gmail.com",
       role = c("aut", "cre"),
-      comment = c(ORCID = "0000-0000-0000-0000")
+      comment = c(ORCID = "0000-0003-2697-9096")
     )
-Description: What the package does (one paragraph).
+Description: Contains demonstration workflows for using {rsofun} for common applications as vignettes. This is provided here in a separate package and repository to keep code and dependencies in {rsofun} slim.
 License: AGPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

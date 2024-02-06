@@ -1,0 +1,26 @@
+---
+title: "Multi-site rsofun simulations with FluxDataKit forcing"
+author: "TBC"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multi-site with FDK}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.width = 7,
+  fig.height = 5
+)
+
+library(rsofun)
+library(dplyr)
+library(ggplot2)
+```
+
+This vignette demonstrates how rsofun is used for an ensemble of simulations for multiple sites with site-level forcing data prepared by FluxDataKit.
+
