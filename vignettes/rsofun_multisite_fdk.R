@@ -1,47 +1,56 @@
-params <-
-list(output_dir = ".")
+# xxx work with library(here), see AGDS book
+# params <-
+# list(output_dir = ".")
 
 #' ---
 #' title: "Generate input data for rsofun Phydro"
 #' author: "Francesco Grossi"
 #' date: "2024_02_09"
 #' output: html_document
-#' params: 
+#' params:
 #'   output_dir: "."
 #' ---
-#' 
+#'
 ## ----setup, include=FALSE--------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
-#' 
+#'
 ## --------------------------------------------------------------------
 library(tidyverse)
-library(reshape2)
+library(reshape2) # recommended to use dplyr (you've loaded tidyverse already)
 #library(FluxDataKit)
 library(lubridate)
 library(ncdf4)
 
-source("read_meta_fdk.R")
+# xxx cannot read this file - it's not part of the repo.
+# Either source from the same repo with source(here::here("R/function_name.R")),
+# or load external functions from libraries. Here, I guess this is from the external
+# library FluxDataKit. Load it.
+library(FluxDataKit)
+# source("read_meta_fdk.R")
 
-#' 
-#' 
 ## --------------------------------------------------------------------
-args = commandArgs(trailingOnly=TRUE)
+# xxx this statement is only used if the script is run from the shell (terminal)
+# with arguments provided from the shell
+# args = commandArgs(trailingOnly=TRUE)
 
 sites <- c("GF-Guy","BE-Vie")
 
-root_data_dir <- "./fluxdatakit_oct3"
+# xxx highlight that this is user specific - data is external to this project
+# root_data_dir <- "./fluxdatakit_oct3"
+root_data_dir <- "/Users/benjaminstocker/data/FluxDataKit"
 
-#' 
-#' 
 ## --------------------------------------------------------------------
 
 lsm_path = paste0(root_data_dir, "/FLUXDATAKIT_LSM/")
 csv_path = paste0(root_data_dir, "/FLUXDATAKIT_FLUXNET/")
 out_path = paste0(root_data_dir, "/phydro_drivers/")
+# xxx just to clarify: we're not running phydro, phydro uses additional forcing time series which are not relevat for our modelling. our workflow should thus be simpler.
 
+# xxx work with here::here()
 dir.create(out_path, showWarnings = F)
-dir.create(paste0(out_path, "data_gen_figures/"), showWarnings = F)
+# dir.create(paste0(out_path, "data_gen_figures/"), showWarnings = F)
+dir.create(here::here("data_gen_figures"), showWarnings = F)
 
 #figures_prefix = paste0(out_path,"/data_gen_figures/", site)
 
@@ -109,7 +118,8 @@ ddf_24hr_mean <- lapply(sites,tmp_fun)
 names(ddf_24hr_mean) <- sites
 # P1 check
 
-valid_years <- read.csv("./vignettes/ancillary_data/valid_years_final.csv", header = T, fileEncoding = "UTF-16")
+# xxx always use here::here() to make sure the code runs irrespective of where the script file is saved
+valid_years <- read.csv(here::here("vignettes/ancillary_data/valid_years_final.csv"), header = T, fileEncoding = "UTF-16")
 
 tmp_fun <- function(x){
   ystart = valid_years %>% filter(Site==x) %>% pull(start_year)
@@ -128,7 +138,7 @@ rownames(year_span) = NULL
 tmp_fun <- function(x){
   ystart <-  year_span %>% filter(site==x) %>% pull(ystart)
   yend <-  year_span %>% filter(site==x) %>% pull(yend)
-  
+
   result <- hhdf[names(hhdf)==x][[1]] |> filter(date >= as_date(paste0(floor((ystart[[1]]+yend[[1]])/2),"-06-01")) &
                                                   date <= as_date(paste0(floor((ystart[[1]]+yend[[1]])/2),"-06-03")) )
   return(result)
@@ -162,7 +172,7 @@ aggregate_daily_3hr_maxima = function(df){
 # TO DO (not work)
 
 tmp_fun <- function(x){
-  result <- test3day[names(test3day)==x][[1]] |> 
+  result <- test3day[names(test3day)==x][[1]] |>
     mutate(across(ends_with("date"), as.Date, format = "%m/%d/%Y")) |>
     group_by(date)|>
     do(aggregate_daily_3hr_maxima(.)) |>
@@ -264,14 +274,14 @@ tmp_fun <- function(x){
 
 tmaxmin <- lapply(sites,tmp_fun)
 names(tmaxmin) <- sites
-  
+
 ## --------------------------------------------------------------------
 # Creating driver object  ------------------------------------------------------
 
 # common part
 message("- compiling drivers")
-load("./data/p_model_drivers.rda")
-nc <- nc_open("./vignettes/ancillary_data/cwdx80.nc")
+load(here::here("data/p_model_drivers.rda"))  # xxx added here::here()
+nc <- nc_open(here::here("vignettes/ancillary_data/cwdx80.nc"))   # xxx added here::here()
 lons <- ncvar_get(nc, "lon")
 lats <- ncvar_get(nc, "lat")
 S80 <- ncvar_get(nc, "cwdx80")
@@ -286,14 +296,14 @@ tmp_fun <- function(x){
   p_hydro_drivers_list <- append(p_hydro_drivers_list,p_hydro_drivers)
 }
 
-p_hydro_drivers_list <- lapply(sites,tmp_fun) 
+p_hydro_drivers_list <- lapply(sites,tmp_fun)
 names(p_hydro_drivers_list) <- sites
 
 # function 1
 #big function until a df is created
 
 tmp_fun <- function(x){
-  
+
   # variable creation
   site_lon <- meta[names(meta)==x][[1]][[1]]
   site_lon <- site_lon$longitude
@@ -304,8 +314,8 @@ tmp_fun <- function(x){
   S80_slice <- S80[(lonid-n):(lonid+n), (latid-n):(latid+n)]
   whc_site <- mean(as.numeric(S80_slice, na.rm=T))
   whc_site_sd <- sd(as.numeric(S80_slice, na.rm=T))
-  
-  # df selection 
+
+  # df selection
   result <- p_hydro_drivers_list[names(p_hydro_drivers_list)==x][[1]]
   # data creation to insert in site info
   lon <- meta[names(meta)==x][[1]][[1]]
@@ -316,17 +326,17 @@ tmp_fun <- function(x){
   elv <- elv$elevation
   IGBP_veg_short <- meta[names(meta)==x][[1]][[1]]
   IGBP_veg_short <- IGBP_veg_short$IGBP_veg_short
-  
+
   canpoy_data <-  meta[names(meta)==x][[1]][[1]]
   canpoy_data <- canpoy_data$canopy_height
   canopy_height <- ifelse(is.na(canpoy_data), yes = 20, canpoy_data)
-  
+
   reference_data <-  meta[names(meta)==x][[1]][[1]]
   reference_data <- reference_data$reference_height
   reference_height <- ifelse(is.na(reference_data), yes = 22, reference_data)
-  
+
   # tibble creation
-  
+
   result$site_info[[1]] =
     tibble(
       lon=lon,
@@ -344,10 +354,10 @@ tmp_fun <- function(x){
 p_hydro_drivers_list<- lapply(sites,tmp_fun)
 names(p_hydro_drivers_list) <- sites
 
-# function 2 
+# function 2
 
 tmp_fun <- function(x){
-  
+
   #data creation
   start_year <- valid_years %>% filter(Site==x) %>% pull(start_year)
   end_year <- valid_years %>% filter(Site==x) %>% pull(end_year)
@@ -368,7 +378,7 @@ tmp_fun <- function(x){
       netrad = NETRAD,
       patm = PA_F * 1000,
       snow = 0,
-      rain = P_F * 48 /(60 * 60 * 24), 
+      rain = P_F * 48 /(60 * 60 * 24),
       tmin = tmaxmin[names(tmaxmin)==sites[1]][[1]]$tmin, # TMIN_F_MDS,
       tmax = tmaxmin[names(tmaxmin)==sites[1]][[1]]$tmax, # TMAX_F_MDS,
       fapar = FPAR,
@@ -387,14 +397,14 @@ names(p_hydro_drivers_list) <- sites
 # TO DO (not work)
 
 tmp_fun <- function(x){
-  
+
   #data creation
   start_year <- valid_years %>% filter(Site==x) %>% pull(start_year)
   end_year <- valid_years %>% filter(Site==x) %>% pull(end_year)
   # tibble selection
   ddf_3hr_maxima <-  ddf_3hr_maxima[names(ddf_3hr_maxima)==x][[1]]
   # tibble creation
-  
+
   result <- p_hydro_drivers_list[names(p_hydro_drivers_list)==x][[1]]
   result$forcing_acclimforcing_acclim <- ddf_3hr_maxima|>
     dplyr::filter(lubridate::year(date) %in% start_year:end_year) |>
@@ -428,7 +438,7 @@ names(p_hydro_drivers_list_2) <- sites
 #function 4
 
 tmp_fun <- function(x){
-  
+
   #data creation
   start_year <- valid_years %>% filter(Site==x) %>% pull(start_year)
   end_year <- valid_years %>% filter(Site==x) %>% pull(end_year)
@@ -473,7 +483,7 @@ tmp_fun <- function(x){
   end_year <- valid_years %>% filter(Site==x) %>% pull(end_year)
   # tibble selection
   hhdf <-  hhdf[names(hhdf)==x][[1]]
-  
+
   result <- p_hydro_drivers_list[names(p_hydro_drivers_list)==x][[1]]
   result$forcing_halfhourly <- hhdf |>
     dplyr::filter(lubridate::year(date) %in% start_year:end_year) |>
@@ -587,7 +597,7 @@ names(p_hydro_validationList_2) <- sites
 
 
 # fnuction 8
-
+# xxx we don't need 3-hour maxima. That's specific for phydro.
 tmp_fun <- function(x){
   #data creation
   start_year <- valid_years %>% filter(Site==x) %>% pull(start_year)
