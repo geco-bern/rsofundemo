@@ -24,7 +24,7 @@ the path file to lsm file and nc file
 the output path doesn't have to exist since it will be created by the function if not present
 
 ```{r}
-site <- "ES-Amo"
+site <- "FR-Pue"
 csv_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_FLUXNET/")
 lsm_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_LSM/")
 nc_path <- paste0(getwd(),"/vignettes/ancillary_data/")
@@ -37,8 +37,8 @@ create_driver_validation(site,csv_path,lsm_path,nc_path,out_path)
 the data can be loaded using readRDS
 
 ```{r}
-es_driver <- readRDS(paste0(out_path,"ES-Amo_p_model_drivers.rda"))
-es_validation <- readRDS(paste0(out_path,"ES-Amo_p_model_validation.rda"))
+driver <- readRDS(paste0(out_path,site,"_p_model_drivers.rda"))
+validation <- readRDS(paste0(out_path,site,"_p_model_validation.rda"))
 ```
 
 
@@ -62,7 +62,7 @@ params_modl <- list(
 
 # run the model for these parameters
 output <- rsofun::runread_pmodel_f(
-  es_driver,
+  driver,
   par = params_modl
 )
 ```
@@ -76,7 +76,7 @@ df_gpp_plot <- rbind(
     unnest(data) |>
     select(date, gpp) |>
     mutate(type = "P-model output"),
-  es_validation |>
+  validation |>
     unnest(data) |>
     select(date, gpp) |>
     mutate(type = "Observed")
@@ -125,8 +125,8 @@ settings <- list(
 ```{r}
 # calibrate the model and optimize free parameters
 pars <- calib_sofun(
-  drivers = es_driver,  
-  obs = es_validation,
+  drivers = driver,  
+  obs = validation,
   settings = settings,
   # extra arguments passed to the cost function:
   targets = "gpp",             # define target variable GPP
@@ -142,7 +142,7 @@ params_modl$kphio <- pars$par["kphio"]
 
 # Run the model for these parameters
 output_new <- rsofun::runread_pmodel_f(
-  es_driver,
+  driver,
   par = params_modl
 )
 ```
@@ -183,4 +183,3 @@ ggplot(data = df_gpp_plot) +
     colour = ""
   )
 ```
-
