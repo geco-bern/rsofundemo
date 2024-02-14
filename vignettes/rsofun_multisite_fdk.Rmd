@@ -1,27 +1,215 @@
----
-title: "Multi-site rsofun simulations with FluxDataKit forcing"
-author: "TBC"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Multi-site with FDK}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\usepackage[utf8]{inputenc}
----
+to run properly, be sure that the function "create_driver_validation" on p_model_use_site.rmd
+is runned at least for 2 different sites
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.align = "center",
-  fig.width = 7,
-  fig.height = 5
-)
-
-remotes::install_github("geco-bern/rsofun")
-library(rsofun)
+```{r}
 library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(rsofun)
 ```
 
-This vignette demonstrates how rsofun is used for an ensemble of simulations for multiple sites with site-level forcing data prepared by FluxDataKit. 
+      
 
+```{r}
+path  <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_RDA/")     #instert your path of .rda files (will be the same of the output)
+sites <- c("ES-Amo","FR-Pue")
+drivers <-NULL
+for(i in sites){          
+  tmp <-  readRDS(paste0(path,i,"_p_model_drivers.rda"))
+  drivers <- rbind(drivers,tmp)
+}
+```
+
+```{r}
+validations <-NULL
+for(i in sites){
+  tmp <-  readRDS(paste0(path,i,"_p_model_validation.rda"))
+  validations <- rbind(validations,tmp)
+}
+```
+
+
+
+```{r}
+# define model parameter values from previous
+# work
+params_modl <- list(
+  kphio              = 0.04998,    # setup ORG in Stocker et al. 2020 GMD
+  kphio_par_a        = 0.0,        # set to zero to disable temperature-dependence of kphio
+  kphio_par_b        = 1.0,
+  soilm_thetastar    = 0.6 * 240,  # to recover old setup with soil moisture stress
+  soilm_betao        = 0.0,
+  beta_unitcostratio = 146.0,
+  rd_to_vcmax        = 0.014,      # value from Atkin et al. 2015 for C3 herbaceous
+  tau_acclim         = 30.0,
+  kc_jmax            = 0.41
+)
+```
+
+
+```{r}
+# run the model for these parameters
+output <- NULL
+for (i in sites){
+  tmp <- rsofun::runread_pmodel_f(
+  drivers |> filter(sitename==i),
+  par = params_modl)
+  output <- rbind(output,tmp)
+ } 
+
+```
+
+
+
+```{r}
+# Create data.frame for plotting
+df_gpp_plot <- rbind(
+  output |>
+    unnest(data) |>
+    select(date, gpp, sitename) |>
+    mutate(type = "P-model output"),
+  validations |>
+    unnest(data) |>
+    select(date, gpp, sitename) |>
+    mutate(type = "Observed")
+)
+df_gpp_plot$type <- factor(df_gpp_plot$type,
+                           levels = c('P-model output',
+                                      'Observed'))
+
+```
+
+
+
+```{r}
+# Plot GPP
+
+for(i in sites){
+  cairo_pdf(filename = paste0(path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)
+  png(filename = paste0(path,i, "_p_model_not_calibrated.png"), height=700*3, width=700*3, res = 300)
+  p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
+  geom_line(
+    aes(x = date,
+        y = gpp,
+        color = type),
+    alpha = 0.7
+  ) +
+    ggtitle(i)+
+  scale_color_manual(values = c(
+    'P-model output'='grey70',
+    'Observed'='black')) +
+  theme_classic() +
+  theme(panel.grid.major.y = element_line()) +
+  labs(
+    x = 'Date',
+    y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
+    colour = ""
+  )
+  p |> print()
+  dev.off()
+}
+
+
+```
+
+
+
+```{r}
+# calibrating
+settings <- list(
+  method              = "GenSA",
+  metric              = cost_rmse_pmodel,
+  control = list(
+    maxit = 100),
+  par = list(
+    kphio = list(lower=0.02, upper=0.2, init = 0.05)
+  )
+)
+```
+
+
+
+```{r}
+# calibrate the model and optimize free parameters
+
+pars <- NULL
+
+for(i in sites){
+  tmp <- calib_sofun(
+  drivers = drivers |> filter(sitename==i),  
+  obs = validations |> filter(sitename==i),
+  settings = settings,
+  # extra arguments passed to the cost function:
+  targets = "gpp",             # define target variable GPP
+  par_fixed = params_modl[-1]  # fix non-calibrated parameters to previous 
+  # values, removing kphio
+  )
+  names(tmp) <- paste0(names(tmp),"_",i)
+  pars <- append(pars,tmp)
+}
+
+```
+
+
+```{r}
+# Update the parameter list with calibrated value
+
+
+output_new <- NULL
+for (i in sites){
+  
+  params_modl$kphio <- pars[names(pars) == paste0("par_",i)][[1]]
+  tmp <- rsofun::runread_pmodel_f(
+  drivers|> filter(sitename==i),
+  par = params_modl)
+  output_new <- rbind(output_new,tmp)
+ } 
+```
+
+
+
+```{r}
+# Update data.frame for plotting
+df_gpp_plot <- rbind(
+  df_gpp_plot,
+  output_new |>
+    unnest(data) |>
+    select(date, gpp, sitename) |>
+    mutate(type = "P-model output (calibrated)")
+)
+df_gpp_plot$type <- factor(df_gpp_plot$type,
+                           levels = c('P-model output',
+                                      'P-model output (calibrated)',
+                                      'Observed'))
+
+```
+
+
+```{r}
+# Plot GPP
+
+for(i in sites){
+  cairo_pdf(filename = paste0(path,i, "_p_model_calibrated.pdf"), height=5, width=10)
+  png(filename = paste0(path,i, "_p_model_calibrated.png"), height=700*3, width=700*3, res = 300)
+  p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
+  geom_line(
+    aes(x = date,
+        y = gpp,
+        color = type),
+    alpha = 0.7
+  ) +
+  scale_color_manual(values = c(
+    'P-model output'='grey70',
+    'P-model output (calibrated)'='grey40',
+    'Observed'='black')) +
+  theme_classic() +
+  theme(panel.grid.major.y = element_line()) +
+  labs(
+    x = 'Date',
+    y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
+    colour = ""
+  )
+  p |> print()
+  dev.off()
+}
+```
