@@ -38,7 +38,6 @@ create_driver_validation <- function(site,csv_path,lsm_path,nc_path,out_path){
     return(NULL)
   }
   
-  hhdf <- hhdf |> mutate(PA_F = if_else(PA_F==-9999,NA,PA_F))
   
   # Add date and time columns to hhdf for easier further processing.
   # ---------------------------------------------------------
