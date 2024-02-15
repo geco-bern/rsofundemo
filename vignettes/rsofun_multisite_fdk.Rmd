@@ -1,6 +1,3 @@
-to run properly, be sure that the function "create_driver_validation" on p_model_use_site.rmd
-is runned at least for 2 different sites
-
 ```{r}
 library(dplyr)
 library(tidyr)
@@ -8,10 +5,10 @@ library(ggplot2)
 library(rsofun)
 ```
 
-      
-
 ```{r}
-path  <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_RDA/")     #instert your path of .rda files (will be the same of the output)
+# output path for images
+out_path <- paste0(getwd(),"/vigenttes/img/") # path output for the images
+path  <- paste0(getwd(),"/vigenttes/files/")     #instert your path of .rda files 
 sites <- c("ES-Amo","FR-Pue")
 drivers <-NULL
 for(i in sites){          
@@ -27,8 +24,6 @@ for(i in sites){
   validations <- rbind(validations,tmp)
 }
 ```
-
-
 
 ```{r}
 # define model parameter values from previous
@@ -46,7 +41,6 @@ params_modl <- list(
 )
 ```
 
-
 ```{r}
 # run the model for these parameters
 output <- NULL
@@ -56,10 +50,7 @@ for (i in sites){
   par = params_modl)
   output <- rbind(output,tmp)
  } 
-
 ```
-
-
 
 ```{r}
 # Create data.frame for plotting
@@ -79,14 +70,12 @@ df_gpp_plot$type <- factor(df_gpp_plot$type,
 
 ```
 
-
-
 ```{r}
 # Plot GPP
 
 for(i in sites){
-  cairo_pdf(filename = paste0(path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)
-  png(filename = paste0(path,i, "_p_model_not_calibrated.png"), height=700*3, width=700*3, res = 300)
+  cairo_pdf(filename = paste0(out_path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)
+  png(filename = paste0(out_path,i, "_p_model_not_calibrated.png"), height=700*3, width=700*3, res = 300)
   p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
   geom_line(
     aes(x = date,
@@ -108,11 +97,7 @@ for(i in sites){
   p |> print()
   dev.off()
 }
-
-
 ```
-
-
 
 ```{r}
 # calibrating
@@ -126,8 +111,6 @@ settings <- list(
   )
 )
 ```
-
-
 
 ```{r}
 # calibrate the model and optimize free parameters
@@ -147,9 +130,7 @@ for(i in sites){
   names(tmp) <- paste0(names(tmp),"_",i)
   pars <- append(pars,tmp)
 }
-
 ```
-
 
 ```{r}
 # Update the parameter list with calibrated value
@@ -166,8 +147,6 @@ for (i in sites){
  } 
 ```
 
-
-
 ```{r}
 # Update data.frame for plotting
 df_gpp_plot <- rbind(
@@ -181,16 +160,14 @@ df_gpp_plot$type <- factor(df_gpp_plot$type,
                            levels = c('P-model output',
                                       'P-model output (calibrated)',
                                       'Observed'))
-
 ```
-
 
 ```{r}
 # Plot GPP
 
 for(i in sites){
-  cairo_pdf(filename = paste0(path,i, "_p_model_calibrated.pdf"), height=5, width=10)
-  png(filename = paste0(path,i, "_p_model_calibrated.png"), height=700*3, width=700*3, res = 300)
+  cairo_pdf(filename = paste0(out_path,i, "_p_model_calibrated.pdf"), height=5, width=10)
+  png(filename = paste0(out_path,i, "_p_model_calibrated.png"), height=700*3, width=700*3, res = 300)
   p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
   geom_line(
     aes(x = date,
