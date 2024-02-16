@@ -12,8 +12,8 @@ The result of the model will be inserted in the folder [img](https://github.com/
 
 ```{r}
 # output path for images
-out_path <- paste0(getwd(),"/vigenttes/img/") # path output for the images
-path  <- paste0(getwd(),"/vigenttes/files/")     #instert your path of .rda files 
+out_path <- paste0(getwd(),"/vigenttes/fig/") # path output for the images
+path  <- paste0(getwd(),"/data/")     #instert your path of .rda files 
 sites <- c("ES-Amo","FR-Pue")
 drivers <-NULL
 for(i in sites){          
