@@ -56,7 +56,7 @@ If you want to run the P-model with different sites, be sure to have the followi
 
 - The csv and lsm files of the site downloable [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
 - the metadata file present in [ancillary data](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data).
-- the nc file present in [zenodo](https://zenodo.org/records/5515246).
+- the cwdx80.nc file present in [zenodo](https://zenodo.org/records/5515246).
 
 ## P-model Use
 
