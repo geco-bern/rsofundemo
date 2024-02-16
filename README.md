@@ -61,11 +61,18 @@ NC files too large TO SOLVE
 
 ## P-model Use
 
-Below sections show the ease of use of the package in terms of model parameter specification and running both a single run or optimizing the parameters for a given site (or multiple sites). For an in depth discussion we refer to the [vignettes](https://geco-bern.github.io/rsofun/articles/).
+Below sections show the ease of use of the package in terms of model parameter specification and running both a single run or optimizing the parameters for a given site. For an in depth discussion we refer to the [vignettes](https://geco-bern.github.io/rsofun/articles/).
 
 ### Running model
 
-With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers.
+With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/analysis).
+
+```r
+# load the data
+site <- "FR-Pue"
+driver <- readRDS(paste0(path_file,site,"_p_model_drivers.rda"))
+validation <- readRDS(paste0(path_file,site,"_p_model_validation.rda"))
+```
 
 ``` r
 # define model parameter values from previous
@@ -84,7 +91,7 @@ params_modl <- list(
 
 # run the model for these parameters
 output <- rsofun::runread_pmodel_f(
-  p_model_drivers,
+  p_model_drivers, # or use drivers
   par = params_modl
   )
 ```
@@ -114,8 +121,8 @@ With all settings defined the optimization function `calib_sofun()` can be calle
 ``` r
 # calibrate the model and optimize free parameters
 pars <- calib_sofun(
-    drivers = p_model_drivers,  
-    obs = p_model_validation,
+    drivers = p_model_drivers,  # or use drivers
+    obs = p_model_validation, # or use validation
     settings = settings,
     # extra arguments passed to the cost function:
     targets = "gpp",             # define target variable GPP
@@ -126,7 +133,7 @@ pars <- calib_sofun(
 
 ## P-model multisite 
 
-the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same principle of work as P-model. After the loading of the files is possible to run the model as above
+the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above
 
 ``` r
 # output path for images
