@@ -29,7 +29,7 @@ library("rsofun")
 
 ### install manually
 
-If none of the previuously mention installation works, download the tar.gz folder from here https://github.com/geco-bern/rsofun/releases/tag/v4.4 and use the command
+If none of the previuously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases/tag/v4.4) and use the command
 
 ``` r
 install.packages(path_to_file, repos = NULL, type="source")
