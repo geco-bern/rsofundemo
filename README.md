@@ -50,7 +50,7 @@ library("rsofun")
 
 ## Analysis usage
 
-The [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the data necessary to run the P-model. The data will be stored in rda file format. Two pairs of data (drivers and validation) of two different sites can be found in [files](https://github.com/stineb/rsofundemo/tree/main/vignettes/files).
+The [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the data necessary to run the P-model. The data will be stored in rda file format. Two pairs of data (drivers and validation) of two different sites can be found in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
 If you want to run the P-model with different sites, be sure to have the following files:
 
@@ -59,7 +59,7 @@ If you want to run the P-model with different sites, be sure to have the followi
 - the cwdx80.nc file present in [zenodo](https://zenodo.org/records/5515246).
 
 The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file above and an output path to store the results. 
-The output path doesn't need to exist since it will be created by the function, an example can be found [here](https://github.com/stineb/rsofundemo/tree/main/vignettes/files).
+The output path doesn't need to exist since it will be created by the function, an example can be found [here](https://github.com/stineb/rsofundemo/tree/main/data).
 Since the result are stored, is necessary to run the analysis only once per site.
 
 ## P-model Use
@@ -136,7 +136,7 @@ pars <- calib_sofun(
 
 ## P-model multisite 
 
-the [rsofun_multisite_fdk.Rmd](https://github.com/stineb/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The output will be rendered as PDF and png files in [img](https://github.com/stineb/rsofundemo/tree/main/vignettes/img).
+the [rsofun_multisite_fdk.Rmd](https://github.com/stineb/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The output will be rendered as PDF and png files in [fig](https://github.com/stineb/rsofundemo/tree/main/vignettes/fig).
 
 ``` r
 # output path for images
@@ -185,7 +185,7 @@ for (i in sites){
 
 ## Showing results
 
-The data will not be shown in the vignette, instead a png and PDF files will be created for each site in the folder [img](https://github.com/stineb/rsofundemo/tree/main/vignettes/img).
+The data will not be shown in the vignette, instead a png and PDF files will be created for each site in the folder [fig](https://github.com/stineb/rsofundemo/tree/main/vignettes/fig).
 
 ### Data frame creation for plotting
 
