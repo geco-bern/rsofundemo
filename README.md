@@ -55,9 +55,8 @@ The [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofu
 If you want to run the P-model with different sites, be sure to have the following files:
 
 - The csv and lsm files of the site downloable [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
-- the nc and metadata files present in [ancillary data](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data).
-
-NC files too large TO SOLVE
+- the metadata file present in [ancillary data](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data).
+- the nc file present in [zenodo](https://zenodo.org/records/5515246).
 
 ## P-model Use
 
