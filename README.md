@@ -55,7 +55,7 @@ The [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofu
 If you want to run the P-model with different sites, be sure to have the following files:
 
 - The csv and lsm files of the site downloable [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
-- the nc and metadata files present in the repo [ancillary data]((https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data))
+- the nc and metadata files present in [ancillary data](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data).
 
 NC files too large TO SOLVE
 
@@ -68,7 +68,7 @@ Below sections show the ease of use of the package in terms of model parameter s
 With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/analysis).
 
 ```r
-# load the data
+# load the data, not necessary to run for p_model
 site <- "FR-Pue"
 driver <- readRDS(paste0(path_file,site,"_p_model_drivers.rda"))
 validation <- readRDS(paste0(path_file,site,"_p_model_validation.rda"))
@@ -133,7 +133,7 @@ pars <- calib_sofun(
 
 ## P-model multisite 
 
-the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above
+the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The uotput will be rendered as PDF and png files in [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes).
 
 ``` r
 # output path for images
