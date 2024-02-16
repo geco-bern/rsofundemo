@@ -54,7 +54,7 @@ The [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofu
 
 If you want to run the P-model with different sites, be sure to have the following files:
 
-- The csv and lsm files of the site downloable [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
+- The csv and lsm files of the site downloable from [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
 - the metadata file present in [ancillary data](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data).
 - the cwdx80.nc file present in [zenodo](https://zenodo.org/records/5515246).
 
@@ -132,7 +132,7 @@ pars <- calib_sofun(
 
 ## P-model multisite 
 
-the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The uotput will be rendered as PDF and png files in [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes).
+the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The output will be rendered as PDF and png files in [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes).
 
 ``` r
 # output path for images
