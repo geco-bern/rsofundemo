@@ -2,12 +2,12 @@
 
 Contains demonstration workflows for using {rsofun} for common applications. This is provided here in a separate package and repository to keep code and dependencies in {rsofun} slim.
 
-All demonstration workflows are implemented as vignettes in `./vignettes/` and displayed under 'Articles' on the website.
+All demonstration workflows are implemented as vignettes in `./vignettes/` and displayed under 'Articles' on the [website](https://geco-bern.github.io/rsofun/articles/).
 
 
 ## Installation
 
-### stable release
+### Stable release
 
 **WARNING: rsofun is not currently available on CRAN.** We're working on it. Until it's available again, the command below will not work.
 
@@ -16,7 +16,7 @@ install.packages("rsofun")
 library("rsofun")
 ```
 
-### development release
+### Development release
 
 To install the development releases of the package run the following
 commands:
@@ -27,7 +27,7 @@ remotes::install_github("geco-bern/rsofun")
 library("rsofun")
 ```
 
-### install manually
+### Install manually
 
 If none of the previuously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases/tag/v4.4) and use the command
 
@@ -48,15 +48,19 @@ remotes::install_github("geco-bern/rsofun", build_vignettes = TRUE)
 library("rsofun")
 ```
 
-## analysis usage
+## Analysis usage
 
-The [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/analysis) file creates the data necessary to run the P-model. The data will be stored in rda file format. Two pairs of data (drivers and validation) of two different sites can be found in [files](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/files).
+The [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the data necessary to run the P-model. The data will be stored in rda file format. Two pairs of data (drivers and validation) of two different sites can be found in [files](https://github.com/stineb/rsofundemo/tree/main/vignettes/files).
 
 If you want to run the P-model with different sites, be sure to have the following files:
 
-- The csv and lsm files of the site downloable from [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
-- the metadata file present in [ancillary data](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/ancillary_data).
+- The csv and lsm files of the site downloadable from [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
+- the metadata file present in [ancillary data](https://github.com/stineb/rsofundemo/tree/main/vignettes/ancillary_data).
 - the cwdx80.nc file present in [zenodo](https://zenodo.org/records/5515246).
+
+The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file above and an output path to store the results. 
+The output path doesn't need to exist since it will be created by the function, an example can be found [here](https://github.com/stineb/rsofundemo/tree/main/vignettes/files).
+Since the result are stored, is necessary to run the analysis only once per site.
 
 ## P-model Use
 
@@ -64,7 +68,7 @@ Below sections show the ease of use of the package in terms of model parameter s
 
 ### Running model
 
-With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_p_model_files_creation.R](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/analysis).
+With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis).
 
 ```r
 # load the data, not necessary to run for p_model
@@ -132,7 +136,7 @@ pars <- calib_sofun(
 
 ## P-model multisite 
 
-the [rsofun_multisite_fdk.Rmd](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The output will be rendered as PDF and png files in [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes).
+the [rsofun_multisite_fdk.Rmd](https://github.com/stineb/rsofundemo/tree/main/vignettes) follow the same workflow as P-model. After loading the files is possible to run the model as above. The output will be rendered as PDF and png files in [img](https://github.com/stineb/rsofundemo/tree/main/vignettes/img).
 
 ``` r
 # output path for images
@@ -151,7 +155,7 @@ for(i in sites){
 }
 ``` 
 
-## parameter initialization and running model 
+## Parameter initialization and running model 
 
 ```r
 # define model parameter values from previous
@@ -181,7 +185,7 @@ for (i in sites){
 
 ## Showing results
 
-The data will not be shown in the vignette, instead a png and PDF files will be created for each site in the folder [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes).
+The data will not be shown in the vignette, instead a png and PDF files will be created for each site in the folder [img](https://github.com/stineb/rsofundemo/tree/main/vignettes/img).
 
 ### Data frame creation for plotting
 
