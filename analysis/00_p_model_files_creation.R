@@ -13,10 +13,10 @@ source("generation_validation_bysitename.R")
 # select your own paths, the outpath doesn't need to exist since it will be created
 
 site <- "FR-Pue"
-csv_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_FLUXNET/")
-lsm_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_LSM/")
-nc_path <- paste0(getwd(),"/vignettes/ancillary_data/")
-out_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_RDA/")
+csv_path <- paste0("your_path")
+lsm_path <- paste0("your_path")
+nc_path <- paste0("your_path")
+out_path <- paste0(getwd(),"/data/")
 
 # running once per site since the results are saved 
 create_driver_validation(site,csv_path,lsm_path,nc_path,out_path)
