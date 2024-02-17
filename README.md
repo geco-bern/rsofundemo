@@ -52,13 +52,16 @@ library("rsofun")
 
 The [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the data necessary to run the P-model. The data will be stored in rda file format. Two pairs of data (drivers and validation) of two different sites can be found in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
-If you want to run the P-model with different sites, be sure to have the following files:
+The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file above and an output path to store the results. 
+
+If you want to run the script, be sure to have the following files:
 
 - The csv and lsm files of the site downloadable from [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
-- the metadata file present in [ancillary data](https://github.com/stineb/rsofundemo/tree/main/vignettes/ancillary_data).
+- the metadata file present in [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
 - the cwdx80.nc file present in [zenodo](https://zenodo.org/records/5515246).
 
-The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file above and an output path to store the results. 
+The analysis can be done by inserting the downloaded file in the folder [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
+
 The output path doesn't need to exist since it will be created by the function, an example can be found [here](https://github.com/stineb/rsofundemo/tree/main/data).
 Since the result are stored, is necessary to run the analysis only once per site.
 
