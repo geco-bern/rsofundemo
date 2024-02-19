@@ -52,6 +52,13 @@ library("rsofun")
 
 The [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the data necessary to run the P-model. The data will be stored in rda file format. Two pairs of data (drivers and validation) of two different sites can be found in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
+The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results. 
+
+to run the script, you need to use the repository [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) to create the files that are needed. The metadata file is already present in [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
+
+The analysis can be done by inserting the file obtained from [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) in the folder [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
+
+The results of the script are a pair of rda files, an example can be found [here](https://github.com/stineb/rsofundemo/tree/main/data).
 The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R).
 
 If you want to run the script, be sure to have the following files:
@@ -71,7 +78,7 @@ Below sections show the ease of use of the package in terms of model parameter s
 
 ### Running model
 
-With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis).
+With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_p_model_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis).
 
 ```r
 # load the data, not necessary to run for p_model
