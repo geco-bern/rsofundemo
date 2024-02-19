@@ -58,18 +58,7 @@ to run the script, you need to use the repository [FLuxDataKit](https://github.c
 
 The analysis can be done by inserting the file obtained from [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) in the folder [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
 
-The results of the script are a pair of rda files, an example can be found [here](https://github.com/stineb/rsofundemo/tree/main/data).
-The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R).
-
-If you want to run the script, be sure to have the following files:
-
-- The csv and lsm files of the site downloadable from [fluxnet.org](https://fluxnet.org/data/fluxnet2015-dataset/)
-- the metadata file present in [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
-- the cwdx80.nc file present in [zenodo](https://zenodo.org/records/5515246).
-
-The analysis can be done by inserting the downloaded file in the folder [raw_data](https://github.com/stineb/rsofundemo/tree/main/raw_data).
-
-An example of the analysis output can be found [here](https://github.com/stineb/rsofundemo/tree/main/data).
+The results of the script are a pair of rda files, an example can be found in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 Since the result are stored, is necessary to run the analysis only once per site.
 
 ## P-model Use
