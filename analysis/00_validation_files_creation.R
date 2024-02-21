@@ -7,7 +7,6 @@ library(lubridate)
 library(FluxDataKit)
 library(rsofun)
 library(here)
-source("./R/read_meta_fdk.R")
 
 aggregate_daily_daylength = function(df){
   # Get the time at which SW_IN > 0
@@ -49,19 +48,6 @@ validation <- lapply(sites,function(site){
   # Get filename for HH data for matching site
   file_csv <- files_csv[intersect(grep(site, files_csv),
                                  grep("HH", files_csv))]
-
-  # get metadata
-  # --------------------------------------------------------
-  message("- reading Metadata for site")
-  meta <- suppressWarnings(
-    try(
-      read_meta_fdk(
-        site = site,
-        path = lsm_path,
-        meta_data = T
-      )
-    )
-  )
 
   # get half-hourly data  --------------------------------------------------------
   # message("- convert to FLUXNET standard CSV file")
