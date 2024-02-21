@@ -3,13 +3,16 @@ library(dplyr)
 library(FluxDataKit)
 library(rsofun)
 
-# insert all the files in the data-raw folder need also valid_years.csv
+# insert all the files in the data-raw folder need also valid_years.csv (found in rsofun repo)
 
 sites <- c("ES-Amo","FR-Pue")
 # to use all sites 
 # sites <- FluxDataKit::fdk_site_info
 
+# the data-raw are the csv files and the lsm files obtained from flux data kit repo
+
 files_csv <- list.files(here::here("data-raw//"))
+lsm_path <- here::here("data-raw//")
 
 valid_years <- read.csv(paste0(here::here("data-raw//"),"/valid_years_final.csv"), header = T, fileEncoding = "UTF-16")
 
