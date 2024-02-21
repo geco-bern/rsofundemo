@@ -10,7 +10,6 @@ sites <- c("ES-Amo","FR-Pue")
 # sites <- FluxDataKit::fdk_site_info
 
 files_csv <- list.files(here::here("data-raw//"))
-files_lsm <- list.files(here::here("data-raw//"))
 
 valid_years <- read.csv(paste0(here::here("data-raw//"),"/valid_years_final.csv"), header = T, fileEncoding = "UTF-16")
 
