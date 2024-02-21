@@ -4,6 +4,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(rsofun)
+library(here)
 ```
 ## Data loading
 
@@ -12,8 +13,11 @@ The result of the model will be inserted in the folder [fig](https://github.com/
 
 ```{r}
 # output path for images
-out_path <- paste0(getwd(),"/fig/") # path output for the images
+out_path <- here("fig/")
+# out_path <- paste0(getwd(),"/fig/") # path output for the images
 sites <- c("ES-Amo","FR-Pue")
+
+# load forcing and validation data, produced in analysis/00_p_model_files_creation.R
 drivers <-NULL
 for(site in sites){          
   tmp <-  readRDS(paste0("../data/",site,"_p_model_drivers.rda"))
@@ -25,6 +29,7 @@ for(i in sites){
   validations <- rbind(validations,tmp)
 }
 ```
+
 ## Parameter initialization
 
 The initialized parameter will be the same for every site.
@@ -44,6 +49,7 @@ params_modl <- list(
   kc_jmax            = 0.41
 )
 ```
+
 ## Running model
 
 The model is run using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers.
@@ -53,11 +59,13 @@ The model is run using `runread_pmodel_f()`. This function takes the nested data
 output <- NULL
 for (i in sites){
   tmp <- rsofun::runread_pmodel_f(
-  drivers |> filter(sitename==i),
-  par = params_modl)
+    drivers |> filter(sitename==i),
+    par = params_modl)
   output <- rbind(output,tmp)
  } 
 ```
+
+
 ## Plotting creation
 
 TO show the result, a data frame containing all the sitesis created.
@@ -89,8 +97,9 @@ The model result is shown separately for each site.
 # Plot GPP
 
 for(i in sites){
-  cairo_pdf(filename = paste0(out_path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)
-  png(filename = paste0(out_path,i, "_p_model_not_calibrated.png"), height=700*3, width=700*3, res = 300)
+  # xxx use here::here()
+  # cairo_pdf(filename = paste0(out_path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)
+  # png(filename = paste0(out_path,i, "_p_model_not_calibrated.png"), height=700*3, width=700*3, res = 300)
   p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
   geom_line(
     aes(x = date,
@@ -109,10 +118,10 @@ for(i in sites){
     y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
     colour = ""
   )
-  p |> print()
-  dev.off()
+  ggsave(paste0(out_path,i, "_p_model_not_calibrated.png"))
 }
 ```
+
 ## Calibration setting
 
 To optimize new parameters based upon driver data and a validation dataset we must first specify an optimization strategy and settings, as well as a cost function and parameter ranges. The strategy is identical for all sites.
@@ -132,6 +141,8 @@ settings <- list(
 ```
 
 ## Calibrating model parameters
+
+XXX use the same global parameters for each site - no site-level calibration
 
 The calibration is done indipendetly for each site.
 `rsofun` supports both optimization using the `GenSA` and `BayesianTools` packages. The above statement provides settings for a `GenSA` optimization approach. For this example the maximum number of iterations is kept artificially low. In a real scenario you will have to increase this value orders of magnitude. Keep in mind that optimization routines rely on a cost function, which, depending on its structure influences parameter selection. A limited set of cost functions is provided but the model structure is transparent and custom cost functions can be easily written. More details can be found in the "Parameter calibration and cost functions" vignette.
