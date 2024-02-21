@@ -10,7 +10,7 @@ library(here)
 source("./R/read_meta_fdk.R")
 source("./R/generation_validation_bysitename.R")
 
-# insert all the files in the data-raw folder !!!NEED ALSO valid_years.csv
+# insert all the files in the data-raw folder need also valid_years.csv
 
 sites <- c("ES-Amo","FR-Pue")
 
