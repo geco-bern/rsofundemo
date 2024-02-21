@@ -7,22 +7,21 @@ library(rsofun)
 ```
 ## Data loading
 
-Is possible to run the model with different sites. To do so, referr to [README[(https://github.com/FrancescoGrossi-unimi/rsofundemo/blob/main/README.md).
-The result of the model will be inserted in the folder [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/img).
+Is possible to run the model with different sites. To do so, refer to [README](https://github.com/stineb/rsofundemo/blob/main/README.md).
+The result of the model will be inserted in the folder [fig](https://github.com/stineb/rsofundemo/tree/main/vignettes/fig).
 
 ```{r}
 # output path for images
-out_path <- paste0(getwd(),"/vigenttes/img/") # path output for the images
-path  <- paste0(getwd(),"/vigenttes/files/")     #instert your path of .rda files 
+out_path <- paste0(getwd(),"/fig/") # path output for the images
 sites <- c("ES-Amo","FR-Pue")
 drivers <-NULL
-for(i in sites){          
-  tmp <-  readRDS(paste0(path,i,"_p_model_drivers.rda"))
+for(site in sites){          
+  tmp <-  readRDS(paste0("../data/",site,"_p_model_drivers.rda"))
   drivers <- rbind(drivers,tmp)
 }
 validations <-NULL
 for(i in sites){
-  tmp <-  readRDS(paste0(path,i,"_p_model_validation.rda"))
+  tmp <-  readRDS(paste0("../data/",site,"_p_model_validation.rda"))
   validations <- rbind(validations,tmp)
 }
 ```
@@ -83,7 +82,8 @@ df_gpp_plot$type <- factor(df_gpp_plot$type,
 
 ## Output creation
 
-The output is not directly visualized here but is located in [img](https://github.com/FrancescoGrossi-unimi/rsofundemo/tree/main/vignettes/img). The model result is shown separately for each site.
+The output is not directly visualized here but is located in [fig](https://github.com/stineb/rsofundemo/tree/main/vignettes/fig). 
+The model result is shown separately for each site.
 
 ```{r}
 # Plot GPP

@@ -3,14 +3,16 @@ In this vignettes is possible to run the p_model by selecting one site.
 ```{r}
 # library loading
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(rsofun)
 ```
 the data can be loaded using readRDS, alternatively you can use `p_model_drivers` and `p_model_validation` from `rsofun` package.
 
 ```{r}
-driver <- readRDS(paste0(out_path,site,"_p_model_drivers.rda"))
-validation <- readRDS(paste0(out_path,site,"_p_model_validation.rda"))
+site <- "FR-Pue"
+driver <- readRDS(paste0("../data/",site,"_p_model_drivers.rda"))
+validation <- readRDS(paste0("../data/",site,"_p_model_validation.rda"))
 ```
 
 ## Running model

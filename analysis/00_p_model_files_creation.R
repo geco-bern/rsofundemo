@@ -7,16 +7,17 @@ library(lubridate)
 library(FluxDataKit)
 library(ncdf4)
 library(rsofun)
-source("read_meta_fdk.R")
-source("generation_validation_bysitename.R")
+source("./R/read_meta_fdk.R")
+source("./R/generation_validation_bysitename.R")
 
 # select your own paths, the outpath doesn't need to exist since it will be created
+# insert all the files in the raw_data folder
 
-site <- "FR-Pue"
-csv_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_FLUXNET/")
-lsm_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_LSM/")
-nc_path <- paste0(getwd(),"/vignettes/ancillary_data/")
-out_path <- paste0(getwd(),"/fluxdatakit_oct3/FLUXDATAKIT_RDA/")
+site <- "ES-Amo"
+csv_path <- paste0(getwd(),"/raw/")
+lsm_path <- paste0(getwd(),"/raw/")
+nc_path <- paste0(getwd(),"/raw/")
+out_path <- paste0(getwd(),"/data/")
 
-# running once per site since the results are saved 
+# running once per site since the results are saved
 create_driver_validation(site,csv_path,lsm_path,nc_path,out_path)
