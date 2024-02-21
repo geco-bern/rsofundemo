@@ -27,16 +27,11 @@ validation <- lapply(sites,function(site){
       fdk_convert_lsm(
         site = site,
         fluxnet_format = TRUE,
-        path = lsm_path
-      )
-    )
-  )
+        path = lsm_path)))
 
   if(inherits(hhdf, "try-error")){
     message("!!! conversion to FLUXNET failed  !!!")
-    return(NULL)
-  }
-
+    return(NULL)}
 
   # Add date and time columns to hhdf for easier further processing.
   # ---------------------------------------------------------
@@ -47,8 +42,7 @@ validation <- lapply(sites,function(site){
 
   message("- Add SW_OUT=NA if not present")
   if (!("SW_OUT" %in% colnames(hhdf))) {
-    hhdf$SW_OUT = NA
-  }
+    hhdf$SW_OUT = NA}
 
   # Aggregate to daily 24-hr means  ----------------------------------------------------------
   message("- downsampling FLUXNET format - 24 hr means")
@@ -57,19 +51,11 @@ validation <- lapply(sites,function(site){
       hhdf |>
         group_by(date) |>
         select(-TIMESTAMP_START, -TIMESTAMP_END) |>
-        summarize_all(.funs = mean)
-    )
+        summarize_all(.funs = mean))
 
   # Get valid data years
   ystart <- valid_years %>% filter(Site==site) %>% pull(start_year)
   yend <- valid_years %>% filter(Site==site) %>% pull(end_year)
-
-  tmaxmin <- hhdf |>
-    group_by(date) |>
-    summarize(
-      tmax = max(TA_F_MDS),
-      tmin = min(TA_F_MDS)
-    )
 
   # Write validation data
   message("- compiling validation")
