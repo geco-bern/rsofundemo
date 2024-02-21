@@ -8,30 +8,6 @@ library(FluxDataKit)
 library(rsofun)
 library(here)
 
-aggregate_daily_daylength = function(df){
-  # Get the time at which SW_IN > 0
-  pos_ppfd <- df %>% filter(SW_IN_F_MDS > 10)
-  # if SW_IN is unavailable in that year calc daylength based on NETRAD
-  if (nrow(pos_ppfd) < 2){
-    pos_ppfd <- df %>% filter(NETRAD > 25)
-  }
-
-  tmax <- max(pos_ppfd$time)
-  tmin <- min(pos_ppfd$time)
-
-  # Select times that lie in 3-hr interval around max_t
-  df_aroundmax <- df %>% filter(time <= tmax &
-                                  time >= tmin )
-
-  # take mean of selected entries
-  df_mean <- df_aroundmax |>
-    select(-TIMESTAMP_START, -TIMESTAMP_END) |>
-    summarize_all(.funs = mean) |>
-    mutate(daylength = difftime(tmax, tmin, units="hours") |> as.numeric())
-
-  df_mean
-}
-
 # insert all the files in the data-raw folder need also valid_years.csv
 
 sites <- c("ES-Amo","FR-Pue")
@@ -94,12 +70,6 @@ validation <- lapply(sites,function(site){
   # Get valid data years
   ystart <- valid_years %>% filter(Site==site) %>% pull(start_year)
   yend <- valid_years %>% filter(Site==site) %>% pull(end_year)
-
-  message("- downsampling FLUXNET format - daytime means")
-  ddf_daytime_mean <- hhdf |>
-    group_by(date) |>
-    do(aggregate_daily_daylength(.)) |>
-    ungroup()
 
   tmaxmin <-
     hhdf |>
