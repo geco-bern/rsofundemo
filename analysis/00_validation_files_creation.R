@@ -1,12 +1,7 @@
 # create validation file used in p_model
 library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(reshape2)
-library(lubridate)
 library(FluxDataKit)
 library(rsofun)
-library(here)
 
 # insert all the files in the data-raw folder need also valid_years.csv
 
@@ -14,10 +9,10 @@ sites <- c("ES-Amo","FR-Pue")
 # to use all sites 
 # sites <- FluxDataKit::fdk_site_info
 
-csv_path <- here::here("data-raw//")
-lsm_path <- here::here("data-raw//")
-files_csv <- list.files(csv_path)
-files_lsm <- list.files(lsm_path)
+files_csv <- list.files(here::here("data-raw//"))
+files_lsm <- list.files(here::here("data-raw//"))
+
+valid_years <- read.csv(paste0(here::here("data-raw//"),"/valid_years_final.csv"), header = T, fileEncoding = "UTF-16")
 
 validation <- lapply(sites,function(site){
 
@@ -45,10 +40,10 @@ validation <- lapply(sites,function(site){
 
   # Add date and time columns to hhdf for easier further processing.
   # ---------------------------------------------------------
-  hhdf <-
-    hhdf |>
+  hhdf <- hhdf |>
     mutate(time = lubridate::as_datetime(as.character(TIMESTAMP_START), tz = "GMT", format="%Y%m%d%H%M")) |>
-    mutate(date = lubridate::as_date(time))
+    mutate(date = lubridate::as_date(time)) |>
+    select(-time)
 
   message("- Add SW_OUT=NA if not present")
   if (!("SW_OUT" %in% colnames(hhdf))) {
@@ -65,14 +60,11 @@ validation <- lapply(sites,function(site){
         summarize_all(.funs = mean)
     )
 
-  valid_years <- read.csv(paste0(csv_path,"/valid_years_final.csv"), header = T, fileEncoding = "UTF-16")
-
   # Get valid data years
   ystart <- valid_years %>% filter(Site==site) %>% pull(start_year)
   yend <- valid_years %>% filter(Site==site) %>% pull(end_year)
 
-  tmaxmin <-
-    hhdf |>
+  tmaxmin <- hhdf |>
     group_by(date) |>
     summarize(
       tmax = max(TA_F_MDS),
@@ -85,8 +77,7 @@ validation <- lapply(sites,function(site){
   p_hydro_validation <- p_model_validation
   p_hydro_validation$sitename[[1]] = site
 
-  p_hydro_validation$data <-
-    ddf_24hr_mean |>
+  p_hydro_validation$data <- ddf_24hr_mean |>
     dplyr::filter(lubridate::year(date) %in% ystart:yend) |>
     dplyr::filter(!(lubridate::mday(date) == 29 & lubridate::month(date) == 2)) |>
     group_by(date) |>
