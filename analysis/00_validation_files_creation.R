@@ -36,20 +36,15 @@ validation <- lapply(sites,function(site){
   # ---------------------------------------------------------
   hhdf <- hhdf |>
     mutate(time = lubridate::as_datetime(as.character(TIMESTAMP_START), tz = "GMT", format="%Y%m%d%H%M")) |>
-    mutate(date = lubridate::as_date(time)) |>
-    select(-time)
-
-  message("- Add SW_OUT=NA if not present")
-  if (!("SW_OUT" %in% colnames(hhdf))) {
-    hhdf$SW_OUT = NA}
-
+    mutate(date = lubridate::as_date(time))
+  
   # Aggregate to daily 24-hr means  ----------------------------------------------------------
   message("- downsampling FLUXNET format - 24 hr means")
   ddf_24hr_mean <-
     try(
       hhdf |>
         group_by(date) |>
-        select(-TIMESTAMP_START, -TIMESTAMP_END) |>
+        select(-TIMESTAMP_START, -TIMESTAMP_END,-time) |>
         summarize_all(.funs = mean))
 
   # Get valid data years
