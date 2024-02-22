@@ -118,7 +118,7 @@ for(i in sites){
     y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
     colour = ""
   )
-  ggsave(paste0(out_path,i, "_p_model_not_calibrated.png"))
+  ggsave(paste0(out_path,i, "_p_model_not_calibrated.png"), plot = p)
 }
 ```
 
