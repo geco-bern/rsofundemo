@@ -1,71 +1,21 @@
-# Demonstration workflows with rsofun
+---
+title: "p_model_use"
+output: html_document
+date: "2024-02-21"
+---
+In this vignettes is possible to run the p_model by selecting multiple sites.
+Is also possible to run it for a single site.
 
-Contains demonstration workflows for using {rsofun} for common applications. This is provided here in a separate package and repository to keep code and dependencies in {rsofun} slim.
-
-All demonstration workflows are implemented as vignettes in `./vignettes/` and displayed under 'Articles' on the [website](https://geco-bern.github.io/rsofun/articles/).
-
-
-## Installation
-
-### Stable release
-
-**WARNING: rsofun is not currently available on CRAN.** We're working on it. Until it's available again, the command below will not work.
-
-``` r
-install.packages("rsofun")
-library("rsofun")
+```{r}
+# library loading
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(rsofun)
+library(here)
 ```
-
-### Development release
-
-To install the development releases of the package run the following
-commands:
-
-``` r
-if(!require(remotes)){install.packages("remotes")}
-remotes::install_github("geco-bern/rsofun")
-library("rsofun")
-```
-
-### Install manually
-
-If none of the previuously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases/tag/v4.4) and use the command
-
-``` r
-install.packages(path_to_file, repos = NULL, type="source")
-library("rsofun")
-```
-
-
-**NOTE:** Installing from GitHub requires compilation of Fortran and C source code contained in {rsofun}. To enable compiling source code, install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows, or [Xcode](https://developer.apple.com/xcode/) and the [GNU Fortran compiler on Mac](https://github.com/fxcoudert/gfortran-for-macOS) (see also 'Mandatory tools' [here](https://mac.r-project.org/tools/)). On Linux, the gfortran compiler is usually installed already.
-
-Vignettes are not rendered by default, if you want to include additional
-documentation please use:
-
-``` r
-if(!require(remotes)){install.packages("remotes")}
-remotes::install_github("geco-bern/rsofun", build_vignettes = TRUE)
-library("rsofun")
-```
-
-## Analysis usage
-
-The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [FluxDatakit](https://github.com/geco-bern/FluxDataKit/tree/main/data).
-the files will be stoted in [data](https://github.com/stineb/rsofundemo/tree/main/data).
-
-The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results. 
-
-to run the script, you need to use the repository [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) to create the files that are needed. The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
-
-## P-model Use
-
-Below sections show the ease of use of the package in terms of model parameter specification and running both a single run or optimizing the parameters for a given site. For an in depth discussion we refer to the [vignettes](https://geco-bern.github.io/rsofun/articles/).
-
-### Running model
-
-With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis).
-
-the data can be loaded using readRDS, alternatively you can use `p_model_drivers` and `p_model_validation` from `rsofun` package. The rsofun_validation_data.rds file does not contain all the sites (up to now contains only these two)
+the data can be loaded using readRDS, alternatively you can use `p_model_drivers` and `p_model_validation` from `rsofun` package. 
+The rsofun_validation_data.rds file does not contain all the sites (up to now contains only these two)
 
 ```{r}
 sites <- c("ES-Amo","FR-Pue")
@@ -73,6 +23,7 @@ driver <- readRDS(paste0(here("data//"),"rsofun_driver_data.rds"))
 validation <- readRDS(paste0(here("data//"),"rsofun_validation_data.rds"))
 
 # filtering (not needed if you run all the sites)
+
 driver <- driver[driver$sitename %in% sites,]
 validation <- validation[validation$sitename %in% sites,]
 ```
@@ -123,7 +74,6 @@ df_gpp_plot <- rbind(
 df_gpp_plot$type <- factor(df_gpp_plot$type,
                            levels = c('P-model output',
                                       'Observed'))
-
 ```
 
 ## Output creation
@@ -252,9 +202,5 @@ for(i in sites){
   ggsave(paste0(here("fig//"),i, "_p_model_calibrated.png"))
 }
 ```
-
-## References
-
-Stocker, B. D., Wang, H., Smith, N. G., Harrison, S. P., Keenan, T. F., Sandoval, D., Davis, T., and Prentice, I. C.: P-model v1.0: an optimality-based light use efficiency model for simulating ecosystem gross primary production, Geosci. Model Dev., 13, 1545–1581, https://doi.org/10.5194/gmd-13-1545-2020, 2020.
 
 For details on the optimization settings we refer to the manuals of [GenSA](https://cran.r-project.org/package=GenSA) and [BayesianTools](https://github.com/florianhartig/BayesianTools).
