@@ -48,12 +48,12 @@ library("rsofun")
 
 ## Analysis usage
 
-The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [FluxDatakit](https://github.com/geco-bern/FluxDataKit/tree/main/data).
-the files will be stoted in [data](https://github.com/stineb/rsofundemo/tree/main/data).
+The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [Zenodo](https://zenodo.org/records/8403081).
+the files will be stored in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
 The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results. 
 
-to run the script, you need to use the repository [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) to create the files that are needed. The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
+to run the script, you need to download the data from [Zenodo](https://zenodo.org/records/8403081). The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
 
 ## P-model Use
 
@@ -62,7 +62,7 @@ Below sections show the ease of use of the package in terms of model parameter s
 ### Running model
 
 With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific strucutre explained in `p_model_drivers` documentation.
-You can use either the `p_model_drivers` and `p_model_validation` or use the driver data obtained from [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) and the validation data obtainted from  [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis). The last two data can be loaded using `readRDS()`.
+You can use either the `p_model_drivers` and `p_model_validation` or use the driver data downloaded previously. The validation data can be obtainted from  [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis). The last two data can be loaded using `readRDS()`.
 
 ## Running model
 
