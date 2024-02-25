@@ -4,7 +4,6 @@ Contains demonstration workflows for using {rsofun} for common applications. Thi
 
 All demonstration workflows are implemented as vignettes in `./vignettes/` and displayed under 'Articles' on the [website](https://geco-bern.github.io/rsofun/articles/).
 
-
 ## Installation
 
 ### Stable release
@@ -36,7 +35,6 @@ install.packages(path_to_file, repos = NULL, type="source")
 library("rsofun")
 ```
 
-
 **NOTE:** Installing from GitHub requires compilation of Fortran and C source code contained in {rsofun}. To enable compiling source code, install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows, or [Xcode](https://developer.apple.com/xcode/) and the [GNU Fortran compiler on Mac](https://github.com/fxcoudert/gfortran-for-macOS) (see also 'Mandatory tools' [here](https://mac.r-project.org/tools/)). On Linux, the gfortran compiler is usually installed already.
 
 Vignettes are not rendered by default, if you want to include additional
@@ -50,12 +48,12 @@ library("rsofun")
 
 ## Analysis usage
 
-The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [FluxDatakit](https://github.com/geco-bern/FluxDataKit/tree/main/data).
-the files will be stoted in [data](https://github.com/stineb/rsofundemo/tree/main/data).
+The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [Zenodo](https://zenodo.org/records/8403081).
+the files will be stored in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
 The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results. 
 
-to run the script, you need to use the repository [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) to create the files that are needed. The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
+to run the script, you need to download the data from [Zenodo](https://zenodo.org/records/8403081). The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
 
 ## P-model Use
 
@@ -63,118 +61,22 @@ Below sections show the ease of use of the package in terms of model parameter s
 
 ### Running model
 
-With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. You can use either the `p_model_drivers` and `p_model_validation` which are present in the library or use the data obtained with [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis).
-
-the data can be loaded using readRDS, alternatively you can use `p_model_drivers` and `p_model_validation` from `rsofun` package. The rsofun_validation_data.rds file does not contain all the sites (up to now contains only these two)
-
-```{r}
-sites <- c("ES-Amo","FR-Pue")
-driver <- readRDS(paste0(here("data//"),"rsofun_driver_data.rds"))
-validation <- readRDS(paste0(here("data//"),"rsofun_validation_data.rds"))
-
-# filtering (not needed if you run all the sites)
-driver <- driver[driver$sitename %in% sites,]
-validation <- validation[validation$sitename %in% sites,]
-```
+With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific strucutre explained in `p_model_drivers` documentation.
+You can use either the `p_model_drivers` and `p_model_validation` or use the driver data downloaded previously. The validation data can be obtainted from  [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis). The last two data can be loaded using `readRDS()`.
 
 ## Running model
 
+To run the model, is necessary to define the parameters that will be using during the analysis. The optimal parameters are alreday present in the vignette.
 With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers.
-
-```{r}
-
-# define model parameter values from previous
-# work
-params_modl <- list(
-  kphio              = 0.04998,    # setup ORG in Stocker et al. 2020 GMD
-  kphio_par_a        = 0.0,        # set to zero to disable temperature-dependence of kphio
-  kphio_par_b        = 1.0,
-  soilm_thetastar    = 0.6 * 240,  # to recover old setup with soil moisture stress
-  soilm_betao        = 0.0,
-  beta_unitcostratio = 146.0,
-  rd_to_vcmax        = 0.014,      # value from Atkin et al. 2015 for C3 herbaceous
-  tau_acclim         = 30.0,
-  kc_jmax            = 0.41
-)
-
-# run the model for these parameters
-output <- rsofun::runread_pmodel_f(
-  driver,
-  par = params_modl
-)
-```
+To have an in-depth description of the model output refers to `run_pmodel_f_bysite ()` documentation.
 
 ## Plotting creation
 
-TO show the result, a data frame containing all the sites is created.
-
-```{r}
-# Create data.frame for plotting
-df_gpp_plot <- rbind(
-  output |>
-    unnest(data) |>
-    select(date, gpp, sitename) |>
-    mutate(type = "P-model output"),
-  driver |>
-    unnest(forcing) |>
-    select(date, gpp, sitename) |>
-    mutate(type = "Observed")
-)
-df_gpp_plot$type <- factor(df_gpp_plot$type,
-                           levels = c('P-model output',
-                                      'Observed'))
-
-```
-
-## Output creation
-
-The output is not directly visualized here but is located in [fig](https://github.com/stineb/rsofundemo/tree/main/fig). 
-The model result is shown separately for each site.
-
-```{r}
-# Plot GPP
-
-for(i in sites){
-  
-  p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
-  geom_line(
-    aes(x = date,
-        y = gpp,
-        color = type),
-    alpha = 0.7
-  ) +
-    ggtitle(i)+
-  scale_color_manual(values = c(
-    'P-model output'='grey70',
-    'Observed'='black')) +
-  theme_classic() +
-  theme(panel.grid.major.y = element_line()) +
-  labs(
-    x = 'Date',
-    y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
-    colour = ""
-  )
-  ggsave(paste0(here("fig//"),i, "_p_model_not_calibrated.png"))
-}
-```
+To show the result, a data frame containing all the sites is created. The plot will be stored as png file which can be found in [fig](https://github.com/stineb/rsofundemo/tree/main/fig). 
 
 ## Calibrating model parameters
 
 To optimize new parameters based upon driver data and a validation dataset we must first specify an optimization strategy and settings, as well as a cost function and parameter ranges.
-
-
-```{r}
-# calibrating
-settings <- list(
-  method              = "GenSA",
-  metric              = cost_rmse_pmodel,
-  control = list(
-    maxit = 100),
-  par = list(
-    kphio = list(lower=0.02, upper=0.2, init = 0.05)
-  )
-)
-```
 
 `rsofun` supports both optimization using the `GenSA` and `BayesianTools` packages. The above statement provides settings for a `GenSA` optimization approach. For this example the maximum number of iterations is kept artificially low. In a real scenario you will have to increase this value orders of magnitude. Keep in mind that optimization routines rely on a cost function, which, depending on its structure influences parameter selection. A limited set of cost functions is provided but the model structure is transparent and custom cost functions can be easily written. More details can be found in the "Parameter calibration and cost functions" vignette.
 
@@ -182,76 +84,11 @@ In addition starting values and ranges are provided for the free parameters in t
 
 With all settings defined the optimization function `calib_sofun()` can be called with driver data and observations specified. Extra arguments for the cost function (like what variable should be used as target to compute the root mean squared error (RMSE) and previous values for the parameters that aren't calibrated, which are needed to run the P-model).
 
-
-```{r}
-# calibrate the model and optimize free parameters
-pars <- calib_sofun(
-  drivers = driver,  
-  obs = validation,
-  settings = settings,
-  # extra arguments passed to the cost function:
-  targets = "gpp",             # define target variable GPP
-  par_fixed = params_modl[-1]  # fix non-calibrated parameters to previous 
-  # values, removing kphio
-)
-```
-
-The updated model will yield better result.
-
-```{r}
-# Update the parameter list with calibrated value
-params_modl$kphio <- pars$par["kphio"]
-
-# Run the model for these parameters
-output_new <- rsofun::runread_pmodel_f(
-  driver,
-  par = params_modl
-)
-```
+The updated model will yield better result. The model will run in the same way as the non calibrated p model.
 
 ## Updating the plot dataframe
 
-```{r}
-# Update data.frame for plotting
-df_gpp_plot <- rbind(
-  df_gpp_plot,
-  output_new |>
-    unnest(data) |>
-    select(date, gpp, sitename) |>
-    mutate(type = "P-model output (calibrated)")
-)
-df_gpp_plot$type <- factor(df_gpp_plot$type,
-                           levels = c('P-model output',
-                                      'P-model output (calibrated)',
-                                      'Observed'))
-```
-
-## PLotting results
-
-```{r}
-for(i in sites){
-  
-  p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
-  geom_line(
-    aes(x = date,
-        y = gpp,
-        color = type),
-    alpha = 0.7
-  ) +
-  scale_color_manual(values = c(
-    'P-model output'='grey70',
-    'P-model output (calibrated)'='grey40',
-    'Observed'='black')) +
-  theme_classic() +
-  theme(panel.grid.major.y = element_line()) +
-  labs(
-    x = 'Date',
-    y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
-    colour = ""
-  )
-  ggsave(paste0(here("fig//"),i, "_p_model_calibrated.png"))
-}
-```
+After the calibration is possible to update the plot dataframe by adding the parameterized output and the plot will be stored as png file.
 
 ## References
 
