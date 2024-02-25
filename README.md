@@ -51,8 +51,6 @@ library("rsofun")
 The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [Zenodo](https://zenodo.org/records/8403081).
 the files will be stored in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
-The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results. 
-
 to run the script, you need to download the data from [Zenodo](https://zenodo.org/records/8403081). The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
 
 ## P-model Use
