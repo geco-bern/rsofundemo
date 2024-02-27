@@ -38,7 +38,7 @@ output <- output |>
   select(-len)
 
 # aggregate outputs to annual totals, then average across years (aet and pet are in mm d-1, )
-get_annual_totals <- function(df){
+get_annual_aet_pet <- function(df){
   df |>
     mutate(year = lubridate::year(date)) |>
     group_by(year) |>
@@ -49,23 +49,54 @@ get_annual_totals <- function(df){
               pet = mean(pet))
 }
 
-output <- output |>
-  mutate(adf = purrr::map(data, ~get_annual_totals(.))) |>
-  unnest(adf)
+adf <- output |>
+  mutate(adf = purrr::map(data, ~get_annual_aet_pet(.))) |>
+  unnest(adf) |>
+  select(sitename, aet, pet)
 
-# Bug: AET > PET for many sites - What is happening???
-output |>
-  ggplot(aes(pet, aet)) +
+# add annual precipitation from forcing
+get_annual_prec_cond <- function(df){
+  df |>
+    mutate(year = lubridate::year(date)) |>
+    group_by(year) |>
+    summarise(prec_cond = sum(prec_cond)) |>
+    ungroup() |>
+    summarise(prec_cond = mean(prec_cond))
+}
+
+adf <- driver |>
+  unnest(forcing) |>
+  left_join(
+    output |>
+      unnest(data) |>
+      select(-snow, -netrad, -fapar, gpp_pmodel = gpp),
+    by = c("sitename", "date")
+  ) |>
+  mutate(prec = (rain + snow) * 60 * 60 * 24) |>
+  mutate(prec_cond = prec + cond) |>
+  group_by(sitename) |>
+  nest() |>
+  mutate(adf = purrr::map(data, ~get_annual_prec_cond(.))) |>
+  unnest(adf) |>
+  select(sitename, prec_cond) |>
+  right_join(
+    adf,
+    by = "sitename"
+  )
+
+# AET vs. precipitation plus condensation
+adf |>
+  ggplot(aes(prec_cond, aet)) +
   geom_point() +
-  geom_abline(slope = 1, linetype = "dotted")
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  xlim(0, NA) +
+  ylim(0, NA)
 
-# Look at time series of an individual site for which AET > PET
-tmp <- output |>
-  filter(sitename == "CZ-BK1") |>
-  pull(data)
-
-ggplot(aes(x = date),
-       data = tmp[[1]] |>
-         slice(1:365)) +
-  geom_line(aes(y = aet), color = "royalblue") +
-  geom_line(aes(y = pet), color = "tomato")
+# budyko
+adf |>
+  ggplot(aes(x = pet/prec_cond, y = aet/prec_cond)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_hline(yintercept = 1, linetype = "dotted") +
+  xlim(0, NA) +
+  ylim(0, NA)
