@@ -8,9 +8,8 @@ Is also possible to run it for a single site.
 
 ```{r}
 # library loading
-library(dplyr)
+library(tidyverse)
 library(tidyr)
-library(ggplot2)
 library(rsofun)
 library(here)
 ```
