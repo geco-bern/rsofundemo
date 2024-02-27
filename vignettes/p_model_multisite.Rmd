@@ -8,10 +8,14 @@ Is also possible to run it for a single site.
 
 ```{r}
 # library loading
+
+if (!require('tidyverse')) install.packages('tidyverse')
 library(tidyverse)
+if (!require('tidyr')) install.packages('tidyr')
 library(tidyr)
-library(rsofun)
+if (!require('here')) install.packages('here')
 library(here)
+library(rsofun)
 ```
 the data can be loaded using readRDS, alternatively you can use `p_model_drivers` and `p_model_validation` from `rsofun` package. 
 The rsofun_validation_data.rds file does not contain all the sites (up to now contains only these two)
