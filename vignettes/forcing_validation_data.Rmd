@@ -1,0 +1,47 @@
+---
+title: "Forcing and validation data"
+author: "Francesco Grossi and Beni Stocker"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{P-model usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Aim
+
+This vignette demonstrates the generation of forcing and validation data for {rsofun} (point-scale) simulations.
+
+Two types of simulations are distinguished: 
+
+1. Simulations for existing networks (e.g., FLUXNET) for which forcing data is from local measurements. 
+2. Simulations for arbitrary locations for which forcing data is generated from global map data.
+
+Validation data (containing observations that are used to calibrate and test rsofun predictions) may be from different sources, depending on the calibration/testing target variable. Below, the following validation data sources are demonstrated:
+
+- FLUXNET: ecosystem fluxes of water vapour, CO~2~, net radiation (and potentially more, depending on the {rsofun} model scope)
+- (more coming soon)
+
+## Simulations for existing networks
+
+### FLUXNET
+
+Variables used as {rsofun} forcing and validation are contained in the same files. Here, we use the FluxDataKit {rsofun} forcing dataset `rsofun_driver_data_clean.rds`, provided on Zenodo ([Hufkens, 2022](https://doi.org/10.5281/zenodo.8403081)). We also demonstrate data generation using the {FluxDataKit} R package.
+
+#### Forcing data
+
+##### Pre-generated file
+
+We use `rsofun_driver_data_clean.rds`, provided on Zenodo ([Hufkens, 2022](https://doi.org/10.5281/zenodo.8403081)). Download that file and specify its local path. Note: adjust this path depending on where the file is located on your computer.
+```{r}
+path_forcingfile <- "~/data/FluxDataKit/rsofun_driver_data_clean.rds"
+```
+
+This contains data for all available sites, including all meta information required for {rsofun} simulations.
+```{r}
+df_forcing <- readRDS(path_forcingfile)
+```
