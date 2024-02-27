@@ -19,7 +19,7 @@ The rsofun_validation_data.rds file does not contain all the sites (up to now co
 
 ```{r}
 sites <- c("ES-Amo","FR-Pue")
-driver <- readRDS(paste0(here("data//"),"rsofun_driver_data.rds"))
+driver <- readRDS(paste0(here("data//"),"rsofun_driver_data_clean.rds"))
 validation <- readRDS(paste0(here("data//"),"rsofun_validation_data.rds"))
 
 # filtering (not needed if you run all the sites)
