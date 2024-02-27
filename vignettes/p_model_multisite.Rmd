@@ -95,7 +95,6 @@ The model result is shown separately for each site.
 
 ```{r}
 # Plot GPP
-
 for(i in sites){
   # xxx use here::here()
   # cairo_pdf(filename = paste0(out_path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)

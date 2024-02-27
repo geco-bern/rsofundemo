@@ -4,7 +4,6 @@ Contains demonstration workflows for using {rsofun} for common applications. Thi
 
 All demonstration workflows are implemented as vignettes in `./vignettes/` and displayed under 'Articles' on the [website](https://geco-bern.github.io/rsofun/articles/).
 
-
 ## Installation
 
 ### Stable release
@@ -18,8 +17,7 @@ library("rsofun")
 
 ### Development release
 
-To install the development releases of the package run the following
-commands:
+To install the development releases of the package run the following commands:
 
 ``` r
 if(!require(remotes)){install.packages("remotes")}
@@ -29,18 +27,16 @@ library("rsofun")
 
 ### Install manually
 
-If none of the previuously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases/tag/v4.4) and use the command
+If none of the previously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases/tag/v4.4) and use the command
 
 ``` r
 install.packages(path_to_file, repos = NULL, type="source")
 library("rsofun")
 ```
 
-
 **NOTE:** Installing from GitHub requires compilation of Fortran and C source code contained in {rsofun}. To enable compiling source code, install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows, or [Xcode](https://developer.apple.com/xcode/) and the [GNU Fortran compiler on Mac](https://github.com/fxcoudert/gfortran-for-macOS) (see also 'Mandatory tools' [here](https://mac.r-project.org/tools/)). On Linux, the gfortran compiler is usually installed already.
 
-Vignettes are not rendered by default, if you want to include additional
-documentation please use:
+Vignettes are not rendered by default, if you want to include additional documentation please use:
 
 ``` r
 if(!require(remotes)){install.packages("remotes")}
@@ -50,10 +46,9 @@ library("rsofun")
 
 ## Analysis usage
 
-The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [FluxDatakit](https://github.com/geco-bern/FluxDataKit/tree/main/data).
-the files will be stoted in [data](https://github.com/stineb/rsofundemo/tree/main/data).
+The [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis) file creates the validation data necessary to run the P-model. The driver data can be obatined from [FluxDatakit](https://github.com/geco-bern/FluxDataKit/tree/main/data). the files will be stoted in [data](https://github.com/stineb/rsofundemo/tree/main/data).
 
-The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results. 
+The file will use two custom function that can be found in [R](https://github.com/stineb/rsofundemo/tree/main/R). To work it requires the path for each file needed and an output path to store the results.
 
 to run the script, you need to use the repository [FLuxDataKit](https://github.com/geco-bern/FluxDataKit/tree/main) to create the files that are needed. The metadata file is already present in [data-raw](https://github.com/stineb/rsofundemo/tree/main/data-raw).
 
@@ -128,8 +123,7 @@ df_gpp_plot$type <- factor(df_gpp_plot$type,
 
 ## Output creation
 
-The output is not directly visualized here but is located in [fig](https://github.com/stineb/rsofundemo/tree/main/fig). 
-The model result is shown separately for each site.
+The output is not directly visualized here but is located in [fig](https://github.com/stineb/rsofundemo/tree/main/fig). The model result is shown separately for each site.
 
 ```{r}
 # Plot GPP
@@ -162,7 +156,6 @@ for(i in sites){
 
 To optimize new parameters based upon driver data and a validation dataset we must first specify an optimization strategy and settings, as well as a cost function and parameter ranges.
 
-
 ```{r}
 # calibrating
 settings <- list(
@@ -181,7 +174,6 @@ settings <- list(
 In addition starting values and ranges are provided for the free parameters in the model. Free parameters include: parameters for the quantum yield efficiency `kphio`, `kphio_par_a` and `kphio_par_b`, soil moisture stress parameters `soilm_thetastar` and `soilm_betao`, and also `beta_unitcostratio`, `rd_to_vcmax`, `tau_acclim` and `kc_jmax` (see `?runread_pmodel_f`). Be mindful that with newer versions of `rsofun` additional parameters might be introduced, so re-check vignettes and function documentation when updating existing code.
 
 With all settings defined the optimization function `calib_sofun()` can be called with driver data and observations specified. Extra arguments for the cost function (like what variable should be used as target to compute the root mean squared error (RMSE) and previous values for the parameters that aren't calibrated, which are needed to run the P-model).
-
 
 ```{r}
 # calibrate the model and optimize free parameters
@@ -255,6 +247,6 @@ for(i in sites){
 
 ## References
 
-Stocker, B. D., Wang, H., Smith, N. G., Harrison, S. P., Keenan, T. F., Sandoval, D., Davis, T., and Prentice, I. C.: P-model v1.0: an optimality-based light use efficiency model for simulating ecosystem gross primary production, Geosci. Model Dev., 13, 1545–1581, https://doi.org/10.5194/gmd-13-1545-2020, 2020.
+Stocker, B. D., Wang, H., Smith, N. G., Harrison, S. P., Keenan, T. F., Sandoval, D., Davis, T., and Prentice, I. C.: P-model v1.0: an optimality-based light use efficiency model for simulating ecosystem gross primary production, Geosci. Model Dev., 13, 1545–1581, <https://doi.org/10.5194/gmd-13-1545-2020>, 2020.
 
 For details on the optimization settings we refer to the manuals of [GenSA](https://cran.r-project.org/package=GenSA) and [BayesianTools](https://github.com/florianhartig/BayesianTools).
