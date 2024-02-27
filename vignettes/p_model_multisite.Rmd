@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 In this vignette is possible to run the p_model for multiple sites separately. 
 ```{r}
 library(dplyr)
@@ -35,6 +36,47 @@ for(i in sites){
 The initialized parameter will be the same for every site.
 
 ```{r}
+=======
+---
+title: "p_model_use"
+output: html_document
+date: "2024-02-21"
+---
+In this vignettes is possible to run the p_model by selecting multiple sites.
+Is also possible to run it for a single site.
+
+```{r}
+# library loading
+
+if (!require('tidyverse')) install.packages('tidyverse')
+library(tidyverse)
+if (!require('tidyr')) install.packages('tidyr')
+library(tidyr)
+if (!require('here')) install.packages('here')
+library(here)
+library(rsofun)
+```
+the data can be loaded using readRDS, alternatively you can use `p_model_drivers` and `p_model_validation` from `rsofun` package. 
+The rsofun_validation_data.rds file does not contain all the sites (up to now contains only these two)
+
+```{r}
+sites <- c("ES-Amo","FR-Pue")
+driver <- readRDS(paste0(here("data//"),"rsofun_driver_data_clean.rds"))
+validation <- readRDS(paste0(here("data//"),"rsofun_validation_data.rds"))
+
+# filtering (not needed if you run all the sites)
+
+driver <- driver[driver$sitename %in% sites,]
+validation <- validation[validation$sitename %in% sites,]
+```
+
+## Running model
+
+With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers.
+
+```{r}
+
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 # define model parameter values from previous
 # work
 params_modl <- list(
@@ -48,6 +90,7 @@ params_modl <- list(
   tau_acclim         = 30.0,
   kc_jmax            = 0.41
 )
+<<<<<<< HEAD
 ```
 
 ## Running model
@@ -69,6 +112,19 @@ for (i in sites){
 ## Plotting creation
 
 TO show the result, a data frame containing all the sitesis created.
+=======
+
+# run the model for these parameters
+output <- rsofun::runread_pmodel_f(
+  driver,
+  par = params_modl
+)
+```
+
+## Plotting creation
+
+TO show the result, a data frame containing all the sites is created.
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 
 ```{r}
 # Create data.frame for plotting
@@ -77,28 +133,46 @@ df_gpp_plot <- rbind(
     unnest(data) |>
     select(date, gpp, sitename) |>
     mutate(type = "P-model output"),
+<<<<<<< HEAD
   validations |>
     unnest(data) |>
+=======
+  driver |>
+    unnest(forcing) |>
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
     select(date, gpp, sitename) |>
     mutate(type = "Observed")
 )
 df_gpp_plot$type <- factor(df_gpp_plot$type,
                            levels = c('P-model output',
                                       'Observed'))
+<<<<<<< HEAD
 
+=======
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 ```
 
 ## Output creation
 
+<<<<<<< HEAD
 The output is not directly visualized here but is located in [fig](https://github.com/stineb/rsofundemo/tree/main/vignettes/fig). 
+=======
+The output is not directly visualized here but is located in [fig](https://github.com/stineb/rsofundemo/tree/main/fig). 
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 The model result is shown separately for each site.
 
 ```{r}
 # Plot GPP
+<<<<<<< HEAD
 for(i in sites){
   # xxx use here::here()
   # cairo_pdf(filename = paste0(out_path,i, "_p_model_not_calibrated.pdf"), height=5, width=10)
   # png(filename = paste0(out_path,i, "_p_model_not_calibrated.png"), height=700*3, width=700*3, res = 300)
+=======
+
+for(i in sites){
+  
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
   p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
   geom_line(
     aes(x = date,
@@ -117,6 +191,7 @@ for(i in sites){
     y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
     colour = ""
   )
+<<<<<<< HEAD
   ggsave(paste0(out_path,i, "_p_model_not_calibrated.png"), plot = p)
 }
 ```
@@ -124,6 +199,15 @@ for(i in sites){
 ## Calibration setting
 
 To optimize new parameters based upon driver data and a validation dataset we must first specify an optimization strategy and settings, as well as a cost function and parameter ranges. The strategy is identical for all sites.
+=======
+  ggsave(paste0(here("fig//"),i, "_p_model_not_calibrated.png"))
+}
+```
+
+## Calibrating model parameters
+
+To optimize new parameters based upon driver data and a validation dataset we must first specify an optimization strategy and settings, as well as a cost function and parameter ranges.
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 
 
 ```{r}
@@ -139,11 +223,14 @@ settings <- list(
 )
 ```
 
+<<<<<<< HEAD
 ## Calibrating model parameters
 
 XXX use the same global parameters for each site - no site-level calibration
 
 The calibration is done indipendetly for each site.
+=======
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 `rsofun` supports both optimization using the `GenSA` and `BayesianTools` packages. The above statement provides settings for a `GenSA` optimization approach. For this example the maximum number of iterations is kept artificially low. In a real scenario you will have to increase this value orders of magnitude. Keep in mind that optimization routines rely on a cost function, which, depending on its structure influences parameter selection. A limited set of cost functions is provided but the model structure is transparent and custom cost functions can be easily written. More details can be found in the "Parameter calibration and cost functions" vignette.
 
 In addition starting values and ranges are provided for the free parameters in the model. Free parameters include: parameters for the quantum yield efficiency `kphio`, `kphio_par_a` and `kphio_par_b`, soil moisture stress parameters `soilm_thetastar` and `soilm_betao`, and also `beta_unitcostratio`, `rd_to_vcmax`, `tau_acclim` and `kc_jmax` (see `?runread_pmodel_f`). Be mindful that with newer versions of `rsofun` additional parameters might be introduced, so re-check vignettes and function documentation when updating existing code.
@@ -151,6 +238,7 @@ In addition starting values and ranges are provided for the free parameters in t
 With all settings defined the optimization function `calib_sofun()` can be called with driver data and observations specified. Extra arguments for the cost function (like what variable should be used as target to compute the root mean squared error (RMSE) and previous values for the parameters that aren't calibrated, which are needed to run the P-model).
 
 
+<<<<<<< HEAD
 
 ```{r}
 # calibrate the model and optimize free parameters
@@ -161,11 +249,19 @@ for(i in sites){
   tmp <- calib_sofun(
   drivers = drivers |> filter(sitename==i),  
   obs = validations |> filter(sitename==i),
+=======
+```{r}
+# calibrate the model and optimize free parameters
+pars <- calib_sofun(
+  drivers = driver,  
+  obs = validation,
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
   settings = settings,
   # extra arguments passed to the cost function:
   targets = "gpp",             # define target variable GPP
   par_fixed = params_modl[-1]  # fix non-calibrated parameters to previous 
   # values, removing kphio
+<<<<<<< HEAD
   )
   names(tmp) <- paste0(names(tmp),"_",i)
   pars <- append(pars,tmp)
@@ -187,6 +283,26 @@ for (i in sites){
  } 
 ```
 
+=======
+)
+```
+
+The updated model will yield better result.
+
+```{r}
+# Update the parameter list with calibrated value
+params_modl$kphio <- pars$par["kphio"]
+
+# Run the model for these parameters
+output_new <- rsofun::runread_pmodel_f(
+  driver,
+  par = params_modl
+)
+```
+
+## Updating the plot dataframe
+
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
 ```{r}
 # Update data.frame for plotting
 df_gpp_plot <- rbind(
@@ -202,12 +318,20 @@ df_gpp_plot$type <- factor(df_gpp_plot$type,
                                       'Observed'))
 ```
 
+<<<<<<< HEAD
 ```{r}
 # Plot GPP
 
 for(i in sites){
   cairo_pdf(filename = paste0(out_path,i, "_p_model_calibrated.pdf"), height=5, width=10)
   png(filename = paste0(out_path,i, "_p_model_calibrated.png"), height=700*3, width=700*3, res = 300)
+=======
+## PLotting results
+
+```{r}
+for(i in sites){
+  
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
   p = ggplot(data = df_gpp_plot |> filter(sitename==i)) +
   geom_line(
     aes(x = date,
@@ -226,7 +350,15 @@ for(i in sites){
     y = expression(paste("GPP (g C m"^-2, "s"^-1, ")")),
     colour = ""
   )
+<<<<<<< HEAD
   p |> print()
   dev.off()
 }
 ```
+=======
+  ggsave(paste0(here("fig//"),i, "_p_model_calibrated.png"))
+}
+```
+
+For details on the optimization settings we refer to the manuals of [GenSA](https://cran.r-project.org/package=GenSA) and [BayesianTools](https://github.com/florianhartig/BayesianTools).
+>>>>>>> fc1513d5f5abf3af5c93b3b20c70323fec0da9f3
