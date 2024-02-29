@@ -135,7 +135,7 @@ $$
 
 To fit the data, a non-linear least square method is used (refer to {nls}).
 The only free parameter is $\omega$.
-The fitted equation provides a good estimation of the data, with an r squared of 0.83.
+The fitted equation provides a good estimation of the data, with an r squared of 0.76.
 
 ```{r}
 # curve fitting and adf updating
@@ -152,7 +152,7 @@ plot_fit = data.frame(obs = adf$aet/adf$prec_cond, pred= fit_fun(adf$pet/adf$pre
 ggplot(plot_fit, aes(x= obs, y= pred)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
-  geom_smooth(method = "lm", colour = "red")
+  geom_smooth(method = "lm", colour = "red", se = FALSE)
 
 ```
 
