@@ -65,9 +65,12 @@ In this vignette the data will be averaged over the entire time of data collecti
 get_annual_aet_pet <- function(df){
   df |>
     mutate(year = lubridate::year(date)) |>
-    group_by(sitename, year) |>
+    group_by(year) |>
+    summarise(aet = sum(aet),
+              pet = sum(pet)) |>
+    ungroup() |>
     summarise(aet = mean(aet),
-              pet = mean(pet)) 
+              pet = mean(pet))
 }
 
 adf <- output |>
@@ -79,8 +82,10 @@ adf <- output |>
 get_annual_prec_cond <- function(df){
   df |>
     mutate(year = lubridate::year(date)) |>
-    group_by(sitename, year) |>
-    summarise(prec_cond = mean(prec_cond)) 
+    group_by(year) |>
+    summarise(prec_cond = sum(prec_cond)) |>
+    ungroup() |>
+    summarise(prec_cond = mean(prec_cond))
 }
 
 adf <- driver |>
