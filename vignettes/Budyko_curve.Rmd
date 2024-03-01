@@ -301,59 +301,53 @@ adf |>
   xlim(0, NA) 
 ```
 
-
 ## New whc 
 
 Test the whc obtained from [Stocker, 2023](https://zenodo.org/records/5515246)
-Download the file "zroot_cwd80.nc" and put in the data folder
+Download the file "cwdx80.nc" and put in the data folder
 
 ```{r}
 # updating whc
 library(ncdf4)
 
-root <- nc_open(here("data","zroot_cwd80.nc"))
+nc_file <- nc_open(here("data","cwdx80.nc"))
 
-zroot = ncvar_get(root, "zroot_cwd80")
-lons = ncvar_get(root, "lon")
-lats = ncvar_get(root, "lat")
+whc = ncvar_get(nc_file, "cwdx80")
+lons = ncvar_get(nc_file, "lon")
+lats = ncvar_get(nc_file, "lat")
 
 geo <- output |>
   unnest(site_info) |>
   select(lon  , lat)
 
-geo$sitename <- output$sitename # to check if something goes wrong
+geo$sitename <- output$sitename 
 
-n <- 1 # paramter to select the slice to average
-new_whc <- c()
-
-for(i in 1:216){
-  site_lon <- geo$lon[i]
-  site_lat <- geo$lat[i]
-  lonid = which(lons > site_lon)[1]-1
-  latid = which(lats > site_lat)[1]-1
-  zroot_region = zroot[(lonid-n):(lonid+n), (latid-n):(latid+n)]
-  whc_site = mean(as.numeric(zroot_region, na.rm=T))
-  new_whc <- append(new_whc,whc_site)
-}
-adf$whc <- new_whc
-
+n <- 1 # parameter to select size of slice to average
+new_whc <- lapply(geo$sitename, function(x){
+  geo <- geo[geo$sitename == x,]
+  lonid <- which(lons > geo$lon)[1]
+  latid <- which(lats > geo$lat)[1]
+  zroot_region <- whc[(lonid-n):(lonid+n), (latid-n):(latid+n)]
+  whc_site <- mean(as.numeric(zroot_region, na.rm=T))
+  return(whc_site)
+  })
+adf$whc <- unlist(new_whc)
 ```
 
-
 ```{r}
-# plot to highlits the difference between old and new whc
+# plot to highlights the difference between old and new whc
 old_whc <- output |>
   unnest(site_info) |>
   select(whc)
 old_whc <- old_whc[[1]]
-ggplot(data.frame(old = old_whc, new = new_whc), aes(x=old,y=new))+
-  geom_point()
+ggplot(data.frame(old = old_whc, new =  unlist(new_whc)), aes(x=old,y=new))+
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted")
 ```
 
 ```{r}
-# fit with the new whc
 fit = nls(aet/prec_cond ~ (exp((whc/a)*(1-(pet/prec_cond)^-1))-1)/(exp((whc/a)*(1-(pet/prec_cond)^-1))-((pet/prec_cond)^-1)),
-          data = adf,start = list(a = 23))
+          data = adf,start = list(a = 2.3))
 
 fit_fun = function(x){
   (exp((adf$whc/coef(fit))*(1-x^-1))-1)/(exp((adf$whc/coef(fit))*(1-x^-1))-x^-1)}
@@ -368,7 +362,6 @@ ggplot(plot_fit, aes(x= obs, y= pred)) +
             label = paste0("r^2 = ",format(cor(plot_fit$obs ,plot_fit$pred, use = "complete.obs")^2, digits=4)))
 
 ```
-
 
 ```{r}
 adf |> 
