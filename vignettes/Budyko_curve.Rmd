@@ -23,7 +23,7 @@ library(here)
 
 ```{r}
 # use the data found on Zenodo ([Hufkens, 2022](https://doi.org/10.5281/zenodo.8403081))
-driver <- readRDS(here("data","rsofun_driver_data_clean.rds"))
+driver <- readRDS(here("data/rsofun_driver_data_clean.rds"))
 ```
 
 ```{r}
