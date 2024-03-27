@@ -48,7 +48,7 @@ ggplot(data.frame(delta_whc = variable_whc$whc- costant_whc$whc,
 # fit with old data
 fit <- lm(aet ~ ET, data= costant_whc)
 
-r_squared <- as.numeric(sprintf("%.3f",cor(costant_whc$le,costant_whc$aet, use = "complete.obs")^2))
+r_squared <- as.numeric(sprintf("%.3f",cor(costant_whc$ET,costant_whc$aet, use = "complete.obs")^2))
 slope <- as.numeric(sprintf("%.3f",fit$coefficients[2]))
 intercept <- as.numeric(sprintf("%.3f",fit$coefficients[1]))
 
@@ -66,7 +66,7 @@ plot_1 <- ggplot(costant_whc,aes(x= ET,y=aet)) +
 # fit with new data
 fit <- lm(aet ~ ET, data= variable_whc)
 
-r_squared <- as.numeric(sprintf("%.3f",cor(variable_whc$le,variable_whc$aet, use = "complete.obs")^2))
+r_squared <- as.numeric(sprintf("%.3f",cor(variable_whc$ET,variable_whc$aet, use = "complete.obs")^2))
 slope <- as.numeric(sprintf("%.3f",fit$coefficients[2]))
 intercept <- as.numeric(sprintf("%.3f",fit$coefficients[1]))
 
