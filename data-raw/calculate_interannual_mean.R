@@ -227,5 +227,22 @@ var_whc_adf <- var_whc_driver |>
     by = "sitename"
   )
 
+# filter by land use (remove crop and wetland)
+keep <- fdk_site_info|>
+  filter(igbp_land_use != "CRO" & igbp_land_use != "WET")
+
+cost_whc_adf <- cost_whc_adf[which(cost_whc_adf$sitename %in% keep$sitename),]
+var_whc_adf <- var_whc_adf[which(var_whc_adf$sitename %in% keep$sitename),]
+
+# filter by good quality le_corr
+keep <- fdk_site_fullyearsequence |>
+  filter(drop_lecorr != TRUE)
+
+cost_whc_adf <- cost_whc_adf[which(cost_whc_adf$sitename %in% keep$sitename),]
+var_whc_adf <- var_whc_adf[which(var_whc_adf$sitename %in% keep$sitename),]
+
+# the ystart and yend are already correct
+
+
 saveRDS(cost_whc_adf,here("data","costant_whc.rds"))
 saveRDS(var_whc_adf,here("data","variable_whc.rds"))
