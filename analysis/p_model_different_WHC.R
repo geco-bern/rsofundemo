@@ -11,6 +11,21 @@ library(FluxDataKit)
 # Download that files and specify its local path
 cost_whc_driver <- var_whc_driver <- readRDS(here("data","rsofun_driver_data_v3.rds")) #insert your local path
 
+# filter by land use (remove crop and wetland)
+keep <- fdk_site_info|>
+  filter(igbp_land_use != "CRO" & igbp_land_use != "WET")
+
+cost_whc_driver <- cost_whc_driver[which(cost_whc_driver$sitename %in% keep$sitename),]
+var_whc_driver <- var_whc_driver[which(var_whc_driver$sitename %in% keep$sitename),]
+
+# filter by good quality le_corr
+keep <- fdk_site_fullyearsequence |>
+  filter(drop_lecorr != TRUE)
+
+cost_whc_driver <- cost_whc_driver[which(cost_whc_driver$sitename %in% keep$sitename),]
+var_whc_driver <- var_whc_driver[which(var_whc_driver$sitename %in% keep$sitename),]
+
+
 # function used to create dataframes
 get_annual_aet_pet <- function(df){
   df |>
@@ -230,20 +245,6 @@ var_whc_adf <- var_whc_driver |>
     var_whc_adf,
     by = "sitename"
   )
-
-# filter by land use (remove crop and wetland)
-keep <- fdk_site_info|>
-  filter(igbp_land_use != "CRO" & igbp_land_use != "WET")
-
-cost_whc_adf <- cost_whc_adf[which(cost_whc_adf$sitename %in% keep$sitename),]
-var_whc_adf <- var_whc_adf[which(var_whc_adf$sitename %in% keep$sitename),]
-
-# filter by good quality le_corr
-keep <- fdk_site_fullyearsequence |>
-  filter(drop_lecorr != TRUE)
-
-cost_whc_adf <- cost_whc_adf[which(cost_whc_adf$sitename %in% keep$sitename),]
-var_whc_adf <- var_whc_adf[which(var_whc_adf$sitename %in% keep$sitename),]
 
 saveRDS(cost_whc_adf,here("data","output_costant_whc.rds"))
 saveRDS(var_whc_adf,here("data","output_variable_whc.rds"))
