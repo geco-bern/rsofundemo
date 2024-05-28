@@ -6,6 +6,26 @@ library(ncdf4)
 library(cwd)
 library(FluxDataKit)
 
+# We use `rsofun_driver_data_v3.rds`, provided on Zenodo and whc 2m
+# driver data can be found on [Zenodo](https://zenodo.org/records/10885934)
+# Download that files and specify its local path
+cost_whc_driver <- var_whc_driver <- readRDS(here("data","rsofun_driver_data_v3.rds")) #insert your local path
+
+# filter by land use (remove crop and wetland)
+keep <- fdk_site_info|>
+  filter(igbp_land_use != "CRO" & igbp_land_use != "WET")
+
+cost_whc_driver <- cost_whc_driver[which(cost_whc_driver$sitename %in% keep$sitename),]
+var_whc_driver <- var_whc_driver[which(var_whc_driver$sitename %in% keep$sitename),]
+
+# filter by good quality le_corr
+keep <- fdk_site_fullyearsequence |>
+  filter(drop_lecorr != TRUE)
+
+cost_whc_driver <- cost_whc_driver[which(cost_whc_driver$sitename %in% keep$sitename),]
+var_whc_driver <- var_whc_driver[which(var_whc_driver$sitename %in% keep$sitename),]
+
+
 # function used to create dataframes
 get_annual_aet_pet <- function(df){
   df |>
@@ -62,7 +82,6 @@ params_modl <- list(
   kc_jmax            = 0.41
 )
 
-cost_whc_driver <- var_whc_driver <- readRDS(here("data","filtered_driver.rds"))
 
 # change whc to previous result
 
@@ -227,22 +246,5 @@ var_whc_adf <- var_whc_driver |>
     by = "sitename"
   )
 
-# filter by land use (remove crop and wetland)
-keep <- fdk_site_info|>
-  filter(igbp_land_use != "CRO" & igbp_land_use != "WET")
-
-cost_whc_adf <- cost_whc_adf[which(cost_whc_adf$sitename %in% keep$sitename),]
-var_whc_adf <- var_whc_adf[which(var_whc_adf$sitename %in% keep$sitename),]
-
-# filter by good quality le_corr
-keep <- fdk_site_fullyearsequence |>
-  filter(drop_lecorr != TRUE)
-
-cost_whc_adf <- cost_whc_adf[which(cost_whc_adf$sitename %in% keep$sitename),]
-var_whc_adf <- var_whc_adf[which(var_whc_adf$sitename %in% keep$sitename),]
-
-# the ystart and yend are already correct
-
-
-saveRDS(cost_whc_adf,here("data","costant_whc.rds"))
-saveRDS(var_whc_adf,here("data","variable_whc.rds"))
+saveRDS(cost_whc_adf,here("data","output_costant_whc.rds"))
+saveRDS(var_whc_adf,here("data","output_variable_whc.rds"))

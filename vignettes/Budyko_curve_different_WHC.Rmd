@@ -291,8 +291,8 @@ library(ggplot2)
 library(here)
 library(cowplot)
 library(FluxDataKit)
-costant_whc <- readRDS(here("data","costant_whc.rds"))
-variable_whc <- readRDS(here("data","variable_whc.rds"))
+costant_whc <- readRDS(here("data","output_costant_whc.rds"))
+variable_whc <- readRDS(here("data","output_variable_whc.rds"))
 ```
 
 
