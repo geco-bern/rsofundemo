@@ -2,7 +2,6 @@ library(dplyr)
 library(tidyr)
 library(rsofun)
 library(here)
-library(ncdf4)
 library(cwd)
 library(FluxDataKit)
 
@@ -82,38 +81,15 @@ params_modl <- list(
   kc_jmax            = 0.41
 )
 
-
 # change whc to previous result
+csv_2m = read.csv(here("data","whc_2m.csv"),sep=" ")
 
-nc_file <- nc_open(here("data","whc_2m.nc"))
-
-whc = ncvar_get(nc_file, "whc_2m")
-lons = ncvar_get(nc_file, "lon")
-lats = ncvar_get(nc_file, "lat")
-
-geo <- cost_whc_driver |>
-  unnest(site_info) |>
-  select(lon  , lat)
-
-geo$sitename <- cost_whc_driver$sitename
-
-n <- 1 # parameter to select size of slice to average
-
-old_whc <- lapply(geo$sitename, function(x){
-  tmp <- geo[geo$sitename == x,]
-  lonid <- which(lons > tmp$lon)[1]
-  latid <- which(lats > tmp$lat)[1]
-  whc_grid <- whc[(lonid-n):(lonid+n), (latid-n):(latid+n)]
-  whc_site <- mean(as.numeric(whc_grid, na.rm=T))
-  return(whc_site)
-})
-
-old_whc = unlist(old_whc)
+# check if the sites in csv_2m and cost_whc_driver matches
+all(cost_whc_driver$sitename == csv_2m$sitename)
 
 for(i in 1:dim(cost_whc_driver)[1]){
-  cost_whc_driver$site_info[i][[1]][4] <- old_whc[i]
+  cost_whc_driver$site_info[i][[1]][4] <- csv_2m$WHC[i]
 }
-rm(whc) # for memory
 
 # run p model
 

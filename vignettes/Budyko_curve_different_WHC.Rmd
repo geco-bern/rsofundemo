@@ -19,6 +19,8 @@ This vignette illustrate the Budyko relationship calculated based on interannual
 
 This vignette highlits the difference in P model simulation by considering only the top 2-meter soil (referred as "costant") and by using the water holding capacity from [Stocker et al.](https://www.nature.com/articles/s41561-023-01125-2#ref-CR1) (referred as "variable")
 
+Before running the vignette, be sure to run the script p_model_different_WHC.R in analysis folder
+
 ```{r}
 # library and data loading
 library(dplyr)
