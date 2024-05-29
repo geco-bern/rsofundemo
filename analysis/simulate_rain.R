@@ -26,7 +26,7 @@ get_annual_prec_cond <- function(df){
     summarise(prec_cond = mean(prec_cond))
 }
 
-source(here("data-raw","monthly2daily_weather.R"))
+source(here("analysis","monthly2daily_weather.R"))
 
 # paramter for p model
 params_modl <- list(
