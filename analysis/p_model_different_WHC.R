@@ -2,6 +2,7 @@ library(dplyr)
 library(tidyr)
 library(rsofun)
 library(here)
+library(cwd)
 library(FluxDataKit)
 
 # We use `rsofun_driver_data_v3.rds`, provided on Zenodo and whc 2m
