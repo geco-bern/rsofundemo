@@ -13,7 +13,7 @@ df_rsofun <- readRDS(here("data-raw","rsofun_driver_data_v3.rds"))
 meta_data_1 <- read_csv("C:/Users/Lenovo/Downloads/Nuova cartella/caravan/attributes/camels/attributes_other_camels.csv")
 meta_data_2 <- read_csv("C:/Users/Lenovo/Downloads/Nuova cartella/caravan/attributes/hysets/attributes_other_hysets.csv")
 
-meta_data <-  meta_data_1 #rbind(meta_data_1,meta_data_2) to include also hysets dataset
+meta_data <-  meta_data_1 #rbind(meta_data_1,meta_data_2) to include also hysets dataset, so far work only with camels locations
 rm(meta_data_1,meta_data_2)
 
 # since are alphabetically ordered, the US sites are between 198 and 335
@@ -59,10 +59,11 @@ driver_data_precipitation =  df_rsofun|>
 driver_data_precipitation <- driver_data_precipitation[which(driver_data_precipitation$sitename %in% df$sitename),]
 
 
-# load caravan data and check
+# load caravan data and check, this analysis will work only with camels locations
+# to include the hysets location, split the df in 2 parts and do the analysis fro camels and hysets separately
 
 file_to_open <- unique(df$location)
-
+# insert yout path to camels csv files
 path_to_file <- "C:/Users/Lenovo/Downloads/Nuova cartella/caravan/timeseries/csv/camels/"
 
 
