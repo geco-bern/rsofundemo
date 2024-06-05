@@ -18,21 +18,23 @@ df <- total_precipitation_comparison("US",0.05,"C:/Users/Lenovo/Desktop/berna/rs
 
 # check precipitation and location 
 
-ggplot(prova, aes(x = site_rain, y = location_rain,color=distance)) +
+ggplot(df, aes(x = site_rain, y = location_rain,color=distance)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
-  ggtitle("Total precipitaion in rsofun driver and caravan database")
+  ggtitle("Total precipitaion in rsofun driver and caravan database") +
+  xlab("precipitation from tower measurment (mm)") +
+  ylab("precipitation from caravan measurment l (mm)")
 
 world <- map_data("world")
 
 US <- world[world$long < -70 & world$long > -130,]
 US <- US[US$lat < 50 & US$lat > 25,]
 
-ggplot(prova) +
+ggplot(df) +
   geom_map(data = US, map = US,aes(long, lat, map_id = region),
            color = "black", fill = "lightgray", size = 0.1) +
-  geom_point(aes(x= tower_lon, y = tower_lat, color= "red")) +
-  geom_point(aes(x= lon, y = lat, color= "blue"))
+  geom_point(aes(x= tower_lon, y = tower_lat, color= "driver location")) +
+  geom_point(aes(x= lon, y = lat, color= "caravan location"))
 
 
 
@@ -160,6 +162,6 @@ ggplot(obs_pred_AET)+
   geom_point(aes(x = observed_AET, y = variable_aet, color= "variable")) +
   geom_point(aes(x = observed_AET, y = costant_aet, color= "costant")) +
   geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
-  xlab("AET from caravan") +
-  ylab("AET from P model")
+  xlab("AET from caravan (mm)") +
+  ylab("AET from P model (mm)")
 
