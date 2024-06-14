@@ -3,6 +3,8 @@ title: "Multi-site simulations with the P-model setup"
 output: html_document
 date: "2024-02-21"
 ---
+
+
 In this vignettes is possible to run the p_model by selecting multiple sites.
 Is also possible to run it for a single site.
 
@@ -20,11 +22,10 @@ The rsofun_validation_data.rds file does not contain all the sites (up to now co
 
 ```{r}
 sites <- c("ES-Amo","FR-Pue")
-driver <- readRDS(paste0(here("data//"),"rsofun_driver_data.rds"))
-validation <- readRDS(paste0(here("data//"),"rsofun_validation_data.rds"))
+driver <- readRDS(here("data/rsofun_driver_data_clean.rds"))
+validation <- readRDS(here("data/rsofun_validation_data.rds"))
 
 # filtering (not needed if you run all the sites)
-
 driver <- driver[driver$sitename %in% sites,]
 validation <- validation[validation$sitename %in% sites,]
 ```
