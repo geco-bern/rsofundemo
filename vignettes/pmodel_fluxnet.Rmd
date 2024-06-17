@@ -1,0 +1,162 @@
+---
+title: "P-model at FLUXNET sites"
+author: "Beni Stocker"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{P-model at FLUXNET sites}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r message=FALSE, warning=FALSE}
+# load required libraries 
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(here)
+library(visdat)
+
+# geco-bern packages not on CRAN
+if(!require(remotes)){install.packages(remotes)}
+remotes::install_github("geco-bern/rsofun")
+library(rsofun)
+```
+
+## Aim
+
+Simulations with the P-model, implemented in {rsofun}, rely on forcing data in the form of time series of all input variables, provided at the time scale of the model time step (daily). The model output is at the same time steps, covering the same time span (entire years) as the forcing data.
+
+This vignette demonstrates the use of {rsofun} for an ensemble of site-level (i.e. point-scale) P-model simulations at a **network of sites** for which specifically formatted data of meteorological variables are available and used as model forcing. Here, we use data from the FLUXNET network of ecosystem flux measurements, providing observations of CO~2~, latent and sensible heat fluxes and parallel measurements of meteorological variables. We compare model outputs of gross primary production (GPP, the ecosystem-level CO~2~ uptake driven by photosynthesis) to observation-based daily values available from FLUXNET data.
+
+The P-model can be used to simulate GPP, given climatic variables, and given the fraction of absorbed photosynthetically active radiation (fAPAR). The latter reflects vegetation greenness and is estimated from satellite remote sensing. The source of this data is MODIS FPAR here and used in combination with FLUXNET estimates of meteorological variables.
+
+The model can also be used for arbitrary locations for which forcing data is generated from global map data. This is demonstrated in a separate vignette.
+
+## Load the data
+
+Required model forcing variables are documented [here](https://geco-bern.github.io/rsofun/reference/p_model_drivers.html). The model forcing, site, and simulation parameters are contained in a *model driver object*. This object is fromatted in a *tidy* shape with sites organised along rows and forcing time series, site and simulation parameters wrapped into cells, separate for each site. Each row provides the model driver information for one site-level simulation. 
+
+```{r}
+library(rsofun)
+p_model_drivers
+```
+
+The model driver object is constructed from data collected and processed (unit conversion, some limited additional gap-filling) from FLUXNET-standard data, obtained from regional networks and previous collection efforts (ICOS, AmeriFlux, PLUMBER-2, etc). The model driver object is made available on Zenodo:
+
+*Hufkens, K., & Stocker, B. (2024). FluxDataKit v3.1: A comprehensive data set of ecosystem fluxes for land surface modelling (3.1) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.11370417*
+
+Download the file `rsofun_driver_data_v3.1.rds` and place it locally. It is not included in the repository *rsofundemo*. Read it, pointing to its local path:
+
+```{r eval=FALSE}
+driver <- readRDS("~/data/FluxDataKit/v3.1/rsofun_driver_data_v3.1.rds")
+```
+
+Check for missing values in the forcing data.
+```{r eval=FALSE}
+driver |> 
+  select(sitename, forcing) |> 
+  unnest(forcing) |> 
+  vis_miss(warn_large_data = FALSE)
+```
+
+```{r eval=FALSE, echo=FALSE}
+ggsave(here("fig/missingdata.png"), width = 6, height = 4)
+```
+
+```{r out.width="400px", fig.retina = 1, echo=FALSE}
+knitr::include_graphics(here("fig/missingdata.png"))
+```
+
+We see that some variables have missing data. Net radiation being missing is not a problem as it is currently internally estimated and not taken from the forcing. However, missing data in `fapar`, `co2`, `patm`, and `ccov` are a problem. Determine the sites for which those missing data appear and exclude them.
+
+```{r eval=FALSE}
+exclude_sites <- driver |> 
+  select(sitename, forcing) |> 
+  unnest(forcing) |> 
+  group_by(sitename) |> 
+  summarise(across(all_of(c("fapar", "co2", "patm", "ccov", "temp")), ~sum(is.na(.)))) |> 
+  pivot_longer(all_of(c("fapar", "co2", "patm", "ccov")), names_to = "var", values_to = "val") |> 
+  filter(val > 0) |> 
+  pull(sitename)
+```
+
+This data exclusion is not nice. It should be solved at the level of FluxDataKit. Here, drop corresponding rows from `driver`.
+```{r eval=FALSE}
+driver <- driver |> 
+  filter(!(sitename %in% exclude_sites))
+```
+
+
+## Run the model
+
+Model parameters are kept separate from the driver object. These are not the same as simulation or site parameters, but are to be calibrated, given data. For demonstration, we use parameter values obtained from a prior calibration.
+```{r}
+params_modl <- list(
+  kphio              = 0.04998,    # setup ORG in Stocker et al. 2020 GMD
+  kphio_par_a        = 0.0,        # set to zero to disable temperature-dependence of kphio
+  kphio_par_b        = 1.0,
+  soilm_thetastar    = 0.6 * 240,  # to recover old setup with soil moisture stress
+  soilm_betao        = 0.0,
+  beta_unitcostratio = 146.0,
+  rd_to_vcmax        = 0.014,      # value from Atkin et al. 2015 for C3 herbaceous
+  tau_acclim         = 30.0,
+  kc_jmax            = 0.41
+)
+```
+
+With all data prepared we can now run the P-model using the function `runread_pmodel_f()` from the {rsofun} package. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers.
+
+```{r eval=FALSE}
+output <- rsofun::runread_pmodel_f(
+  driver,
+  par = params_modl
+)
+```
+
+## Evaluate model
+
+The driver object obtained from FluxDataKit contains also time series of ecosystem fluxes. In the present context, these can be used for comparison to model outputs.
+
+Let's compare model outputs and observations for GPP of a single site - FR-Pue an evergreen broadleaved forest in a Mediterranean climate.
+
+Combine model outputs and observations into a single data frame.
+
+```{r eval=FALSE}
+# first take model outputs
+df <- output |> 
+  filter(sitename == "FR-Pue") |> 
+  select(data) |> 
+  unnest(data) |> 
+  select(date, gpp_mod = gpp) |> 
+  left_join(
+    # merge with observations
+    driver |> 
+      filter(sitename == "FR-Pue") |> 
+      select(forcing) |> 
+      unnest(forcing) |> 
+      select(date, gpp_obs = gpp),
+    by = "date"
+  )
+```
+
+Visualise model outputs and observations.
+
+```{r eval=FALSE}
+df |> 
+  pivot_longer(starts_with("gpp_")) |> 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line() +
+  theme_classic()
+```
+
+```{r eval=FALSE, echo=FALSE}
+ggsave(here("fig/gpp_mod_obs_frpue.png"), width = 6, height = 4)
+```
+
+```{r out.width="400px", fig.retina = 1, echo=FALSE}
+knitr::include_graphics(here("fig/gpp_mod_obs_frpue.png"))
+```
+
+The evaluation of simulated vs. observed trends or annual totals requires complete sequences of good-quality observations. This requires subsetting the observational data as demonstrated in the article [P-model at FLUXNET trends](./vignettes/pmodel_fluxnet_trends.Rmd)
+
+

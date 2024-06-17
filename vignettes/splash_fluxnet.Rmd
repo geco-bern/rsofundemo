@@ -1,0 +1,206 @@
+---
+title: "SPLASH at FLUXNET sites"
+author: "Francesco Grossi and Beni Stocker"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SPLASH at FLUXNET sites}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Aim
+
+This vignette illustrate the Budyko relationship calculated based on interannual mean of precipitation, condensation, actual and potential evapotranspiration obtained from local measurment and simulated using P model.
+
+This vignette highlits the difference in P model simulation by considering only the top 2-meter soil (referred as "costant") and by using the water holding capacity from [Stocker et al.](https://www.nature.com/articles/s41561-023-01125-2#ref-CR1) (referred as "variable")
+
+Before running the vignette, be sure to run the script p_model_different_WHC.R in analysis folder
+
+```{r}
+# library and data loading
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(here)
+library(cowplot)
+library(FluxDataKit)
+costant_whc <- readRDS(here("data","output_costant_whc.rds"))
+variable_whc <- readRDS(here("data","output_variable_whc.rds"))
+```
+## change in WHC and AET
+
+since PET in not affected by WHC, ot remains the same in both conditions, meanwhile AET is affected by WHC
+
+```{r}
+tibble(delta_whc = variable_whc$whc - costant_whc$whc, 
+       delta_aet = variable_whc$aet - costant_whc$aet) |>
+  ggplot(aes(x = delta_whc, y = delta_aet)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  xlab(paste0("\u0394 whc")) +
+  ylab("\u0394 aet")
+```
+
+### Budyko relationship and mathematical fitting
+
+The data are fitted using the Fu equation, it has one free parameter $\omega$ which represent all the physico and biological charachteristc of the catchment.
+
+$$
+AET/precipitation = 1 + PET/precipitation - (1 + (PET/precipitation)^\omega)^{1/\omega}
+$$
+The equation will be used to fit all the data point, in the report "Fu_equation" 
+different subset of data will be used.
+
+```{r}
+fit_fun = function(x,omega){
+  return( 1 + x - (1 + (x)^omega)^(1/omega))}
+```
+
+```{r}
+# fit with old whc
+old_fit <- nls(aet/prec_cond ~ (1 + pet/prec_cond)-(1 + (pet/prec_cond)^a)^(1/a)
+               , data = costant_whc,start = list(a = 2.3))
+
+plot_fit <- data.frame(obs = costant_whc$aet/costant_whc$prec_cond, pred= fit_fun(costant_whc$pet/costant_whc$prec_cond, coef(old_fit)))
+
+param = lm(pred ~ obs, data= plot_fit)
+
+r_squared <- as.numeric(format(cor(plot_fit$obs ,plot_fit$pred, 
+                                              use = "complete.obs")^2, digits=2))
+coeff <- as.numeric(format(coef(old_fit), digits=2))
+slope <- as.numeric(format(param$coefficients[2],digits=2))
+intercept <- as.numeric(format(param$coefficients[1],digits=2))
+
+
+plot_1 <- ggplot(plot_fit, aes(x= obs, y= pred)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_smooth(method = "lm", colour = "red", se = FALSE) + 
+  labs( title = "Fu equation fit with costant whc", 
+        subtitle = bquote("R "^2*" = "~.(r_squared)~
+                          " omega = "~.(coeff)~
+                          " slope = "~.(slope)
+                         # ~" int = "~.(intercept)
+                          )) +
+  xlab("observed") +
+  ylab("predicted")
+
+# fit with new whc
+new_fit <- nls(aet/prec_cond ~ 
+                 (1 + pet/prec_cond)-(1 + (pet/prec_cond)^a)^(1/a), 
+               data = variable_whc,start = list(a = 2.3))
+
+plot_fit <- data.frame(obs = variable_whc$aet/variable_whc$prec_cond, pred= fit_fun(variable_whc$pet/variable_whc$prec_cond, coef(new_fit)))
+
+param = lm(pred ~ obs, data= plot_fit)
+
+r_squared <- as.numeric(format(cor(plot_fit$obs ,plot_fit$pred, 
+                                              use = "complete.obs")^2, digits=2))
+coeff <- as.numeric(format(coef(new_fit), digits=2))
+slope <- as.numeric(format(param$coefficients[2],digits=2))
+intercept <- as.numeric(format(param$coefficients[1],digits=2))
+
+
+plot_2 <- ggplot(plot_fit, aes(x= obs, y= pred)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_smooth(method = "lm", colour = "red", se = FALSE) + 
+    labs( title = "Fu equation fit with variable whc", 
+        subtitle = bquote("R "^2*" = "~.(r_squared)~
+                          " omega = "~.(coeff)~
+                          " slope = "~.(slope)
+                         # ~" int = "~.(intercept)
+                          )) +
+  ylab("predicted")+
+  xlab("observed")
+
+plot_grid(plot_1, plot_2)
+```
+
+```{r}
+plot_1 <- ggplot(costant_whc) +
+  geom_point(aes(x = pet/prec_cond, y = aet/prec_cond)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_hline(yintercept = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(0.5,4,length.out=dim(costant_whc)[1]),
+                y = fit_fun(seq(0.5,4,length.out=dim(costant_whc)[1]), coef(old_fit)))
+            ,color = "red") +
+  ylim(0, NA) +
+  xlim(0, NA) + 
+  xlab("PET / prec") +
+  ylab("AET / prec") + 
+  ggtitle("Budyko curve with costant WHC")
+
+plot_2 <- ggplot(variable_whc) +
+  geom_point(aes(x = pet/prec_cond, y = aet/prec_cond)) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_hline(yintercept = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(0.5,4,length.out=dim(variable_whc)[1]),
+                y = fit_fun(seq(0.5,4,length.out=dim(variable_whc)[1]), coef(new_fit)))
+            ,color = "red") +
+  ylim(0, NA) +
+  xlim(0, NA) + 
+  xlab("PET / prec ") +
+  ylab("AET / prec ") + 
+  ggtitle("Budyko curve with variable WHC")
+
+plot_grid(plot_1, plot_2)
+```
+
+
+## plot aet vs et
+
+
+```{r}
+param = lm(aet ~ ET, data= costant_whc)
+
+r_squared <- as.numeric(format(cor(costant_whc$ET ,costant_whc$aet, 
+                                              use = "complete.obs")^2, digits=2))
+coeff <- as.numeric(format(coef(old_fit), digits=2))
+slope <- as.numeric(format(param$coefficients[2],digits=2))
+intercept <- as.numeric(format(param$coefficients[1],digits=2))
+
+
+plot_1 <- ggplot(costant_whc, aes(x= ET, y= aet)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_smooth(method = "lm", colour = "red", se = FALSE) + 
+    labs( title = "Fu equation fit with variable whc", 
+        subtitle = bquote("R "^2*" = "~.(r_squared)~
+                          " omega = "~.(coeff)~
+                          " slope = "~.(slope)
+                         # ~" int = "~.(intercept)
+                          )) +
+  ylab("AET")+
+  xlab("ET (observed)")
+
+# fit with new whc
+
+param = lm(aet ~ ET, data= variable_whc)
+
+r_squared <- as.numeric(format(cor(variable_whc$ET ,variable_whc$aet, 
+                                              use = "complete.obs")^2, digits=2))
+coeff <- as.numeric(format(coef(new_fit), digits=2))
+slope <- as.numeric(format(param$coefficients[2],digits=2))
+intercept <- as.numeric(format(param$coefficients[1],digits=2))
+
+
+plot_2 <- ggplot(variable_whc, aes(x= ET, y= aet)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, linetype = "dotted") +
+  geom_smooth(method = "lm", colour = "red", se = FALSE) + 
+    labs( title = "Fu equation fit with variable whc", 
+        subtitle = bquote("R "^2*" = "~.(r_squared)~
+                          " omega = "~.(coeff)~
+                          " slope = "~.(slope)
+                         # ~" int = "~.(intercept)
+                          )) +
+  ylab("AET")+
+  xlab("ET (observed)")
+
+plot_grid(plot_1, plot_2)
+```

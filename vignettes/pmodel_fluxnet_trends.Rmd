@@ -1,0 +1,370 @@
+---
+title: "GPP trend and CO2?"
+author: "Beni Stocker"
+date: "2024-02-28"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+## Data
+
+```{r warning = FALSE, message = FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(rsofun)
+library(here)
+library(lubridate)
+library(FluxDataKit)
+
+if(!require(devtools)){install.packages(devtools)}
+devtools::install_github("geco-bern/rsofun")
+library(rsofun)
+```
+
+Read nice file from FluxDataKit. This contains meteorological data, remotely sensed LAI and fAPAR, and observations-based GPP from an extended set of FLUXNET sites.
+```{r warning = FALSE, message = FALSE}
+path_forcingfile <- "~/data/FluxDataKit/v3/rsofun_driver_data_v3.rds"
+driver <- readRDS(path_forcingfile)
+```
+
+Get data from all sites except:
+
+- Croplands
+- Wetlands
+- Less than 5 years of sequential good-quality data
+
+```{r}
+sites <- FluxDataKit::fdk_site_info |>
+  dplyr::filter(!(sitename %in% c("MX-Tes", "US-KS3"))) |>  # failed sites
+  dplyr::filter(!(igbp_land_use %in% c("CRO", "WET"))) |> 
+  left_join(
+    fdk_site_fullyearsequence,
+    by = "sitename"
+  ) |> 
+  filter(!drop) |> 
+  filter(nyears >= 5)
+```
+
+Cut driver data to what's filtered above.
+```{r}
+driver_forcing_new <- driver |>
+  select(sitename, forcing) |> 
+  filter(sitename %in% sites$sitename) |> 
+  left_join(
+    sites |> 
+      select(
+        sitename, 
+        year_start = year_start_fullyearsequence, 
+        year_end = year_end_fullyearsequence),
+    by = join_by(sitename)
+  ) |> 
+  unnest(forcing) |> 
+  mutate(year = lubridate::year(date)) |> 
+  mutate(keep = ifelse(year >= year_start & year <= year_end, TRUE, FALSE)) |> 
+  dplyr::select(-year_start, -year_end, -year, -keep) |> 
+  group_by(sitename) |> 
+  nest()
+  
+driver <- driver |> 
+  filter(sitename %in% sites$sitename)
+
+driver$forcing <- driver_forcing_new$data
+```
+
+## Model runs
+
+Run the P-model (rsofun package) assuming 400 ppm for all sites and dates.
+```{r warning = FALSE, message = FALSE}
+params_modl <- list(
+  kphio              = 0.04998,
+  kphio_par_a        = 0.0,
+  kphio_par_b        = 1.0,
+  soilm_thetastar    = 0.6 * 240,
+  soilm_betao        = 0.0,
+  beta_unitcostratio = 146.0,
+  rd_to_vcmax        = 0.014,
+  tau_acclim         = 30.0,
+  kc_jmax            = 0.41
+)
+
+# run the model
+output <- rsofun::runread_pmodel_f(
+  driver |> 
+    mutate(forcing = purrr::map(forcing, ~mutate(., co2 = 400))),
+  par = params_modl
+)
+
+# some simulations failed due to missing values in the forcing. If that happens,
+# the number of rows in the output data is 1.
+output <- output |>
+  mutate(len = purrr::map_int(data, ~nrow(.))) |>
+  filter(len >= 1) |> # at least 3 years data
+  select(-len)
+```
+
+
+Model run with varying CO2 as observed.
+```{r}
+# run the model
+output_varco2 <- rsofun::runread_pmodel_f(
+  driver,
+  par = params_modl
+)
+
+# some simulations failed due to missing values in the forcing. If that happens,
+# the number of rows in the output data is 1.
+output_varco2 <- output_varco2 |>
+  mutate(len = purrr::map_int(data, ~nrow(.))) |>
+  filter(len >= 1) |> # at least 3 years data
+  select(-len)
+```
+
+This yields data and model outputs for 216 sites. Let's look for trends...
+
+## Trends in observed GPP  {.tabset}
+
+### Annual mean
+
+```{r warning = FALSE, message = FALSE}
+get_annual <- function(df){
+  df |>
+    mutate(year = lubridate::year(date)) |>
+    group_by(year) |>
+    summarise(gpp = sum(gpp))
+}
+
+# fit linear regression to annual sums for each site and get slope
+tmp <- driver |>
+  mutate(ndata_gpp = purrr::map_int(forcing, ~sum(!is.na(.$gpp)))) |> 
+  filter(ndata_gpp > 0) |> 
+  mutate(adf = purrr::map(forcing, ~get_annual(.))) |> 
+  mutate(linmod = purrr::map(adf, ~lm(gpp ~ year, data = .))) |> 
+  mutate(slope = purrr::map_dbl(linmod, ~coef(.)[2])) |> 
+  
+  # remove outlier
+  filter(slope > -150)
+```
+
+Plot distribution of linear trends - no dominance of positive trends.
+```{r warning = FALSE, message = FALSE}
+tmp |> 
+  ggplot(aes(slope, after_stat(count))) +
+  geom_histogram(fill = "grey", color = "black", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = median(tmp$slope, na.rm = TRUE), color = "red") +
+  theme_classic()
+```
+
+### Main growing season
+
+Mean across upper 50% w.r.t. daily GPP values
+```{r warning = FALSE, message = FALSE}
+get_annual <- function(df){
+  threshold <- quantile(df$gpp, probs = 0.5, na.rm = TRUE)
+  df |>
+    filter(gpp > threshold) |> 
+    mutate(year = lubridate::year(date)) |>
+    group_by(year) |>
+    summarise(gpp = mean(gpp))
+}
+
+# fit linear regression to annual sums for each site and get slope
+tmp <- driver |>
+  mutate(ndata_gpp = purrr::map_int(forcing, ~sum(!is.na(.$gpp)))) |> 
+  filter(ndata_gpp > 0) |> 
+  mutate(adf = purrr::map(forcing, ~get_annual(.))) |> 
+  mutate(linmod = purrr::map(adf, ~lm(gpp ~ year, data = .))) |> 
+  mutate(slope = purrr::map_dbl(linmod, ~coef(.)[2]))
+```
+
+Plot distribution of linear trends - no dominance of positive trends.
+```{r warning = FALSE, message = FALSE}
+tmp |> 
+  ggplot(aes(slope, after_stat(count))) +
+  geom_histogram(fill = "grey", color = "black", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = median(tmp$slope, na.rm = TRUE), color = "red") + 
+  theme_classic()
+```
+
+### De-seasonalised daily values
+
+TBC
+
+## Trends in LUE  {.tabset}
+
+### Annual mean
+
+```{r warning = FALSE, message = FALSE}
+get_annual <- function(df){
+  df |>
+    mutate(year = lubridate::year(date),
+           apar = fapar * ppfd) |> 
+    group_by(year) |> 
+    summarise(apar = sum(apar),
+              gpp = sum(gpp)) |> 
+    mutate(lue = gpp/apar)
+}
+
+# fit linear regression to annual sums for each site and get slope
+tmp <- driver |>
+  # filter(sitename != "SE-Svb") |>
+  mutate(adf = purrr::map(forcing, ~get_annual(.))) |>
+  mutate(linmod = purrr::map(adf, ~try(lm(lue ~ year, data = .)))) |>
+  mutate(error = purrr::map_chr(linmod, ~class(.))) |>
+  filter(error != "try-error") |>
+  mutate(slope = purrr::map_dbl(linmod, ~coef(.)[2])) |>
+  filter(slope > -12000) # outlier
+```
+
+Plot distribution of linear trends - no dominance of positive trends.
+```{r warning = FALSE, message = FALSE}
+tmp |>
+  ggplot(aes(slope, after_stat(count))) +
+  geom_histogram(fill = "grey", color = "black", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = median(tmp$slope), color = "red") + 
+  theme_classic()
+```
+
+### Main growing season
+
+TBC
+
+### De-seasonalised daily values
+
+TBC
+
+## Trends in P-model  {.tabset}
+
+
+### Trends in simulated GPP
+
+Combine outputs and forcing.
+
+```{r warning = FALSE, message = FALSE}
+tmp <- output_varco2 |>
+  select(sitename, data) |>
+  unnest(data) |>
+  rename(gpp_pmodel = gpp) |>
+  left_join(
+    driver |>
+      select(sitename, forcing) |>
+      unnest(forcing),
+    by = c("sitename", "date")
+  ) |>
+  mutate(res = gpp_pmodel - gpp) |>
+  group_by(sitename) |>
+  nest()
+```
+
+Annual mean
+```{r warning = FALSE, message = FALSE}
+get_annual <- function(df){
+  df |>
+    mutate(year = lubridate::year(date)) |>
+    group_by(year) |>
+    summarise(gpp_pmodel = sum(gpp_pmodel))
+}
+
+# fit linear regression to annual sums for each site and get slope
+tmp <- tmp |>
+  mutate(ndata_gpp = purrr::map_int(data, ~sum(!is.na(.$gpp_pmodel)))) |> 
+  filter(ndata_gpp > 0) |> 
+  mutate(adf = purrr::map(data, ~get_annual(.))) |> 
+  mutate(linmod = purrr::map(adf, ~lm(gpp_pmodel ~ year, data = .))) |> 
+  mutate(slope = purrr::map_dbl(linmod, ~coef(.)[2]))
+```
+
+Plot distribution of linear trends - no clear dominance of positive trends.
+```{r warning = FALSE, message = FALSE}
+tmp |> 
+  ggplot(aes(slope, after_stat(count))) +
+  geom_histogram(fill = "grey", color = "black", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = median(tmp$slope, na.rm = TRUE), color = "red") +
+  theme_classic()
+```
+
+### Trends in residuals
+
+Residuals of model run assuming constant CO2.
+
+Combine outputs and forcing.
+
+```{r warning = FALSE, message = FALSE}
+tmp <- output |>
+  select(sitename, data) |>
+  unnest(data) |>
+  rename(gpp_pmodel = gpp) |>
+  left_join(
+    driver |>
+      select(sitename, forcing) |>
+      unnest(forcing),
+    by = c("sitename", "date")
+  ) |>
+  mutate(res = gpp_pmodel - gpp) |>
+  group_by(sitename) |>
+  nest()
+```
+
+No need to do annual totals. Fit linear regression directly on residuals.
+
+```{r warning = FALSE, message = FALSE}
+# fit linear regression to annual sums for each site and get slope
+tmp2 <- tmp |>
+  mutate(len = purrr::map_int(data, ~nrow(.))) |>
+  filter(len >= 1000) |> # at least 3 years data
+  select(-len) |>
+  mutate(ndata_res = purrr::map_int(data, ~sum(!is.na(.$res)))) |> 
+  filter(ndata_res > 0) |> 
+  mutate(linmod = purrr::map(data, ~lm(res ~ date, data = .))) |>
+  mutate(slope = purrr::map_dbl(linmod, ~coef(.)[2]))
+```
+
+Plot distribution of linear trends in residuals - a tendency of negative trends (expected since the model by design doesn't account for the positive CO~2~ effect on GPP).
+```{r warning = FALSE, message = FALSE}
+tmp2 |>
+  ggplot(aes(slope, after_stat(count))) +
+  geom_histogram(fill = "grey", color = "black", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = median(tmp2$slope), color = "red") + 
+  theme_classic()
+```
+
+### Main growing season
+
+```{r warning = FALSE, message = FALSE}
+filter_gs <- function(df){
+  threshold <- quantile(df$gpp, probs = 0.5, na.rm = TRUE)
+  df |>
+    mutate(res = ifelse(gpp > threshold, res, NA))
+}
+
+# fit linear regression to annual sums for each site and get slope
+tmp2 <- tmp |>
+  mutate(len = purrr::map_int(data, ~nrow(.))) |>
+  filter(len >= 1000) |> # at least 3 years data
+  select(-len) |>
+  mutate(ndata_res = purrr::map_int(data, ~sum(!is.na(.$res)))) |> 
+  filter(ndata_res > 0) |> 
+  mutate(data = purrr::map(data, ~filter_gs(.))) |>
+  mutate(linmod = purrr::map(data, ~lm(res ~ date, data = .))) |>
+  mutate(slope = purrr::map_dbl(linmod, ~coef(.)[2]))
+```
+
+Plot distribution of linear trends - no dominance of positive trends.
+```{r warning = FALSE, message = FALSE}
+tmp2 |>
+  ggplot(aes(slope, after_stat(count))) +
+  geom_histogram(fill = "grey", color = "black", bins = 30) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = median(tmp2$slope), color = "red") + 
+  theme_classic()
+```
+
+### De-seasonalised daily values
+
+TBC
