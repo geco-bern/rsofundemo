@@ -1,16 +1,16 @@
 ---
-title: "P-model at an arbitrary site"
+title: "P-model at arbitrary sites"
 author: "Beni Stocker"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{P-model at an arbitrary site}
+  %\VignetteIndexEntry{P-model at arbitrary sites}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
 
 ## Aim
 
-This vignette demonstrates the use of {rsofun} for an ensemble of arbitrary points on the globe, given their longitude and latitude coordinates. Model forcing data is constructed by reading data from global climate data. This is in contrast to using measured time series of climatic variables obtained from a site network (as described in [this article](./vignettes/pmodel_fluxnet.Rmd).
+This vignette demonstrates the use of {rsofun} for an ensemble of arbitrary points on the globe, given their longitude and latitude coordinates. Model forcing is constructed by reading data from global climate data. This is in contrast to using measured time series of climatic variables obtained from a site network (as described in [this article](./vignettes/pmodel_fluxnet.Rmd).
 
 The R package {ingestr} is used for collecting point-level forcing time series. Install it directly from GitHub (see code chunk at the top of this article).
 
@@ -43,7 +43,16 @@ library(ingestr)
 
 ### Site meta information
 
-The starting point is a data frame of site meta information with site names and geographic locations in degrees east and north. Also required is the starting and end year of the simulation by site. Let's use the same start and end year for all sites. This data frame needs to be specified by the user.
+The following site and simulation meta information are required for the forcing data generation. They need to be specified as columns in a data frame with sites (in column `sitename`) along rows:
+
+- `lon`: longitude, degrees east
+- `lat`: latitude, degrees north
+- `year_start`: start year of the simulation
+- `year_end`: end year of the simulation
+- `elv`: elevation (m a.s.l.)
+- `whc`: root zone water storage capacity (m)
+
+This data frame needs to be specified by the user.
 ```{r}
 siteinfo <- tibble(
   sitename = c("site1", "site2", "site3"), # AU-How, CH-Dav, US-Ha1
@@ -51,8 +60,45 @@ siteinfo <- tibble(
   lat = c(-12.495200, 46.815330, 42.53780)
 ) |> 
   mutate(
-    year_start = 2010,
-    year_end = 2012
+    year_start = 2018,
+    year_end = 2018
+  )
+```
+
+Site elevation and the root zone water storage capacity can be read from global maps.
+
+#### Elevation {-}
+
+```{r warning=FALSE, eval = FALSE}
+df_elv <- ingest(
+  siteinfo,
+  source = "etopo1",
+  dir = "~/data/etopo/"  # adjust this with your local path
+) |> 
+  unnest(data)
+
+siteinfo <- siteinfo |> 
+  left_join(
+    df_elv,
+    by = "sitename"
+  )
+```
+
+
+#### Root zone water storage capacity {-}
+
+```{r warning=FALSE, eval = FALSE}
+df_whc <- ingest(
+  siteinfo,
+  source = "stocker23",
+  dir = "~/data/mct_data/"  # adjust this with your local path
+) |> 
+  unnest(data)
+
+siteinfo <- siteinfo |> 
+  left_join(
+    df_whc,
+    by = "sitename"
   )
 ```
 
@@ -76,15 +122,18 @@ Loading this data can take a while, up to hours if you need several years of dat
 path_watch <- "/data/archive/wfdei_weedon_2014/data"
 path_worldclim <- "/data/archive/worldclim_fick_2017/data"
 
-df_watch <- ingestr::ingest(
+# local path on Beni Laptop
+path_watch <- "~/data/watch_wfdei"
+
+df_watch <- ingest(
   siteinfo = siteinfo,
   source = "watch_wfdei",
   getvars = c("temp", "prec", "ppfd", "vpd", "patm"),
-  dir = path_watch,
-  settings = list(
-    correct_bias = "worldclim",
-    dir_bias = path_worldclim
-  )
+  dir = path_watch
+  # settings = list(
+  #   correct_bias = "worldclim",
+  #   dir_bias = path_worldclim
+  # )
 )
 ```
 
@@ -103,7 +152,7 @@ df_cru <- ingestr::ingest(
   getvars = c("ccov"),
   dir = path_cru,
   settings = list(
-    correct_bias = NULL       # 0.5 deg resolution
+    correct_bias = NULL   # 0.5 deg resolution
   )
 )
 ```
@@ -120,9 +169,10 @@ df_meteo <- df_watch |>
     by = c("sitename", "date")
   ) |>
   dplyr::ungroup() |>                         # keep unnested
-  dplyr::mutate(tmin = temp,                  # placeholders for variables tmin and tmax
-                tmax = temp) |>               # (not used in P-model runs)
-  dplyr::mutate(doy = lubridate::yday(date))  # add day of year
+  dplyr::mutate(
+    tmin = temp,
+    tmax = temp
+    )
 
 head(df_meteo)
 ```
@@ -147,13 +197,27 @@ df_meteo <- df_meteo |>
 
 ### Append fAPAR
 
-Set fAPAR by default to 1 for all observations, which is the same as what
-`ingest(siiteinfo_globresp, source = "fapar_unity")` would do. This makes
-sense for leaf-level simulations.
-```{r, eval=FALSE}
-# Add fapar column with value 1
-df_meteo <- df_meteo |>
-  dplyr::mutate(fapar = 1)
+Specify settings for downloadig point-scale MODIS data ('subsets').
+```{r warning=FALSE, eval = FALSE}
+settings_modis <- get_settings_modis(
+  bundle            = "modis_fpar",
+  data_path         = "~/data/modis_subsets/",
+  method_interpol   = "loess",
+  keep              = TRUE,
+  overwrite_raw     = FALSE,
+  overwrite_interpol= FALSE
+  )
+```
+
+This can now be used to download the data to the directory specified by argument `data_path` of function `get_settings_modis()`.
+
+```{r warning=FALSE, eval = FALSE}
+df_modis_fpar <- ingest(
+  siteinfo, 
+  source = "modis",
+  settings = settings_modis, 
+  parallel = FALSE
+  )
 ```
 
 ## Put all data together into rsofun object

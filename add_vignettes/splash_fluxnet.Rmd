@@ -28,9 +28,11 @@ library(ggplot2)
 library(here)
 library(cowplot)
 library(FluxDataKit)
+
 costant_whc <- readRDS(here("data","output_costant_whc.rds"))
 variable_whc <- readRDS(here("data","output_variable_whc.rds"))
 ```
+
 ## change in WHC and AET
 
 since PET in not affected by WHC, ot remains the same in both conditions, meanwhile AET is affected by WHC

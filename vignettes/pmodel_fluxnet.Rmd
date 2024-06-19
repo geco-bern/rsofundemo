@@ -9,17 +9,13 @@ vignette: >
 ---
 
 ```{r message=FALSE, warning=FALSE}
-# load required libraries 
+# some general libraries 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(here)
 library(visdat)
-
-# geco-bern packages not on CRAN
-if(!require(remotes)){install.packages(remotes)}
-remotes::install_github("geco-bern/rsofun")
-library(rsofun)
+library(lubridate)
 ```
 
 ## Aim
@@ -31,6 +27,17 @@ This vignette demonstrates the use of {rsofun} for an ensemble of site-level (i.
 The P-model can be used to simulate GPP, given climatic variables, and given the fraction of absorbed photosynthetically active radiation (fAPAR). The latter reflects vegetation greenness and is estimated from satellite remote sensing. The source of this data is MODIS FPAR here and used in combination with FLUXNET estimates of meteorological variables.
 
 The model can also be used for arbitrary locations for which forcing data is generated from global map data. This is demonstrated in a separate vignette.
+
+## Installation
+
+{rsofun} is not on CRAN. Install the current version from the main branch directly from GitHub.
+
+```{r}
+# geco-bern packages not on CRAN
+if(!require(remotes)){install.packages(remotes)}
+remotes::install_github("geco-bern/rsofun")
+library(rsofun)
+```
 
 ## Load the data
 
@@ -48,7 +55,7 @@ The model driver object is constructed from data collected and processed (unit c
 Download the file `rsofun_driver_data_v3.1.rds` and place it locally. It is not included in the repository *rsofundemo*. Read it, pointing to its local path:
 
 ```{r eval=FALSE}
-driver <- readRDS("~/data/FluxDataKit/v3.1/rsofun_driver_data_v3.1.rds")
+driver <- readRDS("~/data/FluxDataKit/v3.2/rsofun_driver_data_v3.2.rds")
 ```
 
 Check for missing values in the forcing data.
@@ -60,11 +67,11 @@ driver |>
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-ggsave(here("fig/missingdata.png"), width = 6, height = 4)
+ggsave(here("man/figures/missingdata.png"), width = 6, height = 4)
 ```
 
-```{r out.width="400px", fig.retina = 1, echo=FALSE}
-knitr::include_graphics(here("fig/missingdata.png"))
+```{r out.width="800px", fig.retina = 1, echo=FALSE}
+knitr::include_graphics(here("man/figures/missingdata.png"))
 ```
 
 We see that some variables have missing data. Net radiation being missing is not a problem as it is currently internally estimated and not taken from the forcing. However, missing data in `fapar`, `co2`, `patm`, and `ccov` are a problem. Determine the sites for which those missing data appear and exclude them.
@@ -117,6 +124,8 @@ output <- rsofun::runread_pmodel_f(
 
 The driver object obtained from FluxDataKit contains also time series of ecosystem fluxes. In the present context, these can be used for comparison to model outputs.
 
+### Time series for single site
+
 Let's compare model outputs and observations for GPP of a single site - FR-Pue an evergreen broadleaved forest in a Mediterranean climate.
 
 Combine model outputs and observations into a single data frame.
@@ -150,13 +159,81 @@ df |>
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-ggsave(here("fig/gpp_mod_obs_frpue.png"), width = 6, height = 4)
+ggsave(here("man/figures/gpp_mod_obs_frpue.png"), width = 6, height = 4)
 ```
 
-```{r out.width="400px", fig.retina = 1, echo=FALSE}
-knitr::include_graphics(here("fig/gpp_mod_obs_frpue.png"))
+```{r out.width="800px", fig.retina = 1, echo=FALSE}
+knitr::include_graphics(here("man/figures/gpp_mod_obs_frpue.png"))
 ```
 
-The evaluation of simulated vs. observed trends or annual totals requires complete sequences of good-quality observations. This requires subsetting the observational data as demonstrated in the article [P-model at FLUXNET trends](./vignettes/pmodel_fluxnet_trends.Rmd)
+### Annual totals for all sites
 
+To get annual totals and compare it to observations, we need to consider complete sequences of good-quality observations. We can use information from FluxDataKit for that purpose.
+
+```{r eval=FALSE}
+sites <- FluxDataKit::fdk_site_info |>
+  dplyr::filter(!(igbp_land_use %in% c("CRO", "WET"))) |> 
+  left_join(
+    FluxDataKit::fdk_site_fullyearsequence,
+    by = "sitename"
+  ) |> 
+  filter(!drop_gpp)
+```
+
+Cut driver data to years and sites with good-quality data and combine with outputs.
+```{r eval=FALSE}
+# daily data
+ddf_eval <- driver |>
+  select(sitename, forcing) |> 
+  filter(sitename %in% sites$sitename) |> 
+  left_join(
+    sites |> 
+      select(
+        sitename, 
+        year_start = year_start_gpp, 
+        year_end = year_end_gpp),
+    by = join_by(sitename)
+  ) |> 
+  unnest(forcing) |> 
+  mutate(year = lubridate::year(date)) |> 
+  filter(year >= year_start & year <= year_end) |> 
+  dplyr::select(sitename, date, gpp_obs = gpp) |> 
+  left_join(
+    output |> 
+      select(sitename, data) |> 
+      unnest(data) |> 
+      select(sitename, date, gpp_mod = gpp)
+  )
+
+# annual data
+adf_eval <- ddf_eval |> 
+  mutate(year = year(date)) |> 
+  group_by(sitename, year) |> 
+  summarise(across(starts_with("gpp_"), sum))
+  
+```
+
+Visualise observed (FLUXNET) vs. modelled (P-model) annual GPP values from all sites and years.
+
+```{r eval=FALSE}
+adf_eval |> 
+  ggplot(aes(gpp_mod, gpp_obs)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  scale_fill_viridis_c(trans = "log", option = "magma", direction = -1) +
+  ylim(0, 3000) +
+  xlim(0, 3000) +
+  labs(
+    x = expression(paste("P-model GPP (gC m"^-2, "yr"^-1, ")")),
+    y = expression(paste("FLUXNET GPP (gC m"^-2, "yr"^-1, ")"))
+  )
+```
+```{r eval=FALSE, echo=FALSE}
+ggsave(here("man/figures/gpp_mod_obs_ann.png"), width = 6, height = 4)
+```
+
+```{r out.width="800px", fig.retina = 1, echo=FALSE}
+knitr::include_graphics(here("man/figures/gpp_mod_obs_ann.png"))
+```
 
