@@ -22,7 +22,6 @@ VignetteBuilder: knitr
 Suggests:
     dplyr,
     tidyr,
-    rsofun,
     ggplot2,
     readr,
     lubridate,

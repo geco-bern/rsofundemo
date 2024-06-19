@@ -12,7 +12,6 @@ vignette: >
 # some general libraries 
 library(dplyr)
 library(tidyr)
-library(rsofun)
 library(ggplot2)
 library(readr)
 library(lubridate)
