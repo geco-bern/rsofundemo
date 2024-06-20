@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your project • RTemplate</title>
+<title>Demonstration workflows with rsofun • rsofundemo</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/apple-touch-icon.png">
@@ -18,8 +18,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,300;0,400;0,700;1,300;1,400&amp;display=swap" rel="stylesheet">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><!-- geco --><link href="geco.css" rel="stylesheet">
-<meta property="og:title" content="Your project">
-<meta property="og:description" content="What the package does (one paragraph).">
+<meta property="og:title" content="Demonstration workflows with rsofun">
+<meta property="og:description" content="Contains demonstration workflows for using {rsofun} for common applications as vignettes. This is provided here in a separate package and repository to keep code and dependencies in {rsofun} slim.">
 <meta name="twitter:card" content="summary">
 <!-- Mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js" async integrity="sha256-nlrDrBTHxJJlDDX22AS33xYI1OJHnGMDhiYMSe2U0e0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/config/TeX-AMS-MML_HTMLorMML.js" async integrity="sha256-4zys9A4hMQmtq2EUL+JRoXc0NZi8jVJMzb8onewOaSQ=" crossorigin="anonymous"></script>
 </head>
@@ -45,7 +45,7 @@
         <a class="external-link hidden-md hidden-lg" href="https://geco-group.org/">
           <img src="https://raw.githubusercontent.com/computationales/GECO_template/main/geco_logo_white_small.png" id="hexlogo" alt="GECO"></a>
         <a class="navbar-brand" href="index.html">
-           <i>RTemplate <small>v0.1</small></i>
+           <i>rsofundemo <small>v0.1</small></i>
         </a>
       </div>
     </div>
@@ -55,7 +55,27 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
-        
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/cnmodel_fluxnet.html">C-only and CN-model at a FLUXNET site</a>
+    </li>
+    <li>
+      <a href="articles/pmodel_fluxnet.html">P-model at FLUXNET sites</a>
+    </li>
+  </ul>
+</li>
+        <li>
+  <a href="https://github.com/stineb/rsofundemo/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
 </div>
 <!--/.nav-collapse -->
@@ -69,150 +89,105 @@
       </header><div class="row">
   <div class="contents col-md-9">
 <div class="section level1">
-<div class="page-header"><h1 id="the-geco-r-project-template">The GECO R project template<a class="anchor" aria-label="anchor" href="#the-geco-r-project-template"></a>
+<div class="page-header"><h1 id="demonstration-workflows-with-rsofun">Demonstration workflows with rsofun<a class="anchor" aria-label="anchor" href="#demonstration-workflows-with-rsofun"></a>
 </h1></div>
-<p>This is a github template for a GECO R project repository. This template can be loaded when creating a new project in github. As such you pre-populate a project with a standard set of directories. This ensures a project-oriented and consistent workflow across all lab members, and removes some of the mental overhead in making decisions on a project structure.</p>
-<p>It must be noted that some of the functionality as provided by this setup is included in the <a href="https://usethis.r-lib.org/" class="external-link"><code>usethis</code></a> R package, the aim is slightly different. For one, <code>usethis</code> is aimed at populating a package structure. Second, there is not preset full template, hence many individual decisions still need to be made and code executed. This is bypassed by this setup.</p>
+<p>Contains demonstration workflows for using {rsofun} for common applications. This is provided here in a separate package and repository to keep code and dependencies in {rsofun} slim.</p>
+<p>All demonstration workflows are implemented as vignettes in <code>./vignettes/</code> and displayed under ‘Articles’ on the <a href="https://geco-bern.github.io/rsofun/articles/" class="external-link">website</a>.</p>
 <div class="section level2">
-<h2 id="use">Use<a class="anchor" aria-label="anchor" href="#use"></a>
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="section level3">
-<h3 id="a-github-project-from-the-template">A github project from the template<a class="anchor" aria-label="anchor" href="#a-github-project-from-the-template"></a>
+<h3 id="stable-release">Stable release<a class="anchor" aria-label="anchor" href="#stable-release"></a>
 </h3>
-<p>To use the template create a new repository on github, as you otherwise would using the big green button. If you are in the project on github you can hit the green button top right (Use this template).</p>
-<p><img src="https://github.com/bluegreen-labs/environmental_data_science_101/raw/main/images/green_button.png"></p>
-<p>Otherwise you can select the repository from the template dropdown menu, select <code>geco-bern/R-project-template</code>.</p>
-<p><img src="https://github.com/bluegreen-labs/environmental_data_science_101/raw/main/images/new_repo_1.png"></p>
-<p>Proceed as usual by naming your repository. However, be careful to select the correct owner of the project if you have multiple identities. <img src="https://github.com/bluegreen-labs/environmental_data_science_101/raw/main/images/new_repo_2.png"></p>
+<p><strong>WARNING: rsofun is not currently available on CRAN.</strong> We’re working on it. Until it’s available again, the command below will not work.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rsofun"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"rsofun"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="clone-to-your-local-computer">Clone to your local computer<a class="anchor" aria-label="anchor" href="#clone-to-your-local-computer"></a>
+<h3 id="development-release">Development release<a class="anchor" aria-label="anchor" href="#development-release"></a>
 </h3>
-<p>The new repository will be created and populated with the files of the template. You can then clone the project to your local computer to add files.</p>
-<p>Although optional it is wise to rename the <code>*.Proj</code> file as this will not automatically change to your repository name. However, retaining the original name should not change any of the functionality.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:USER/YOUR_PROJECT.git</span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="structure">Structure<a class="anchor" aria-label="anchor" href="#structure"></a>
-</h2>
-<p>The structure of the template follows the structure of an R package without actually being one. There are several reasons for this.</p>
-<ul>
-<li>Familiarizes you with an R package structure
-<ul>
-<li>allowing for an optional switch to an R package</li>
-</ul>
-</li>
-<li>Avoids top level aggregation of data, code and reporting files</li>
-<li>Splits the dynamic reporting from academic writing (<code>vignettes</code> vs. <code>manuscript</code>)</li>
-<li>Splits pre-processing of data from working / included data (<code>data-raw</code> vs. <code>data</code>)</li>
-<li>Splits R code from other scripts (bash / python in <code>src</code>)</li>
-<li>Splits R functions from R analysis scripts (<code>R</code> vs <code>analysis</code>)</li>
-</ul>
-<p>Below you find a comprehensive list of what goes where an why, as well as some best practices on how to structure further data within these folders.</p>
-<div class="section level3">
-<h3 id="the-r-folder">The R folder<a class="anchor" aria-label="anchor" href="#the-r-folder"></a>
-</h3>
-<p>The <code>R</code> folder contains R functions, not scripts. This means code wrapped in a structure as such</p>
+<p>To install the development releases of the package run the following commands:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># A demo function</span></span>
-<span><span class="co">#</span></span>
-<span><span class="co"># This function demonstrates the general layout</span></span>
-<span><span class="co"># of a function</span></span>
-<span></span>
-<span><span class="va">my_function</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">parameter</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">some_actions</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>Functions are actions you need more than once, which can not be generated easily with external packages and are tailored to your project.</p>
-<p>These functions should stand on their own with limited links to additional custom functions. Ideally you provide a brief title and description on the function’s purpose before.</p>
-<p>Writing functions seems an initial waste of time, you could easily just copy and paste some code in your analysis scripts. However, this means that if you decide certain aspects of this workflow you might have to hunt down these changes in all analysis scripts. Failing to do so will result in corrupted analysis. In addition, writing functions will make it easy to re-use the code within the context of a new project, and if proven to be generally useful outside a single research project it can be integrated in a formal package.</p>
+<code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"geco-bern/rsofun"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"rsofun"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="the-src-folder">The src folder<a class="anchor" aria-label="anchor" href="#the-src-folder"></a>
+<h3 id="install-manually">Install manually<a class="anchor" aria-label="anchor" href="#install-manually"></a>
 </h3>
-<p>The <code>src</code> folder contains scripts and code which is not R related, in packages this folder often contains Fortran or C code which needs to be compiled. Here, it is common to store bash or python functions which might assist in data cleaning or data gathering which can’t be done in R alone.</p>
+<p>If none of the previously mention installation works, download the tar.gz folder from <a href="https://github.com/geco-bern/rsofun/releases/tag/v4.4" class="external-link">here</a> and use the command</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">path_to_file</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"rsofun"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>NOTE:</strong> Installing from GitHub requires compilation of Fortran and C source code contained in {rsofun}. To enable compiling source code, install <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a> on Windows, or <a href="https://developer.apple.com/xcode/" class="external-link">Xcode</a> and the <a href="https://github.com/fxcoudert/gfortran-for-macOS" class="external-link">GNU Fortran compiler on Mac</a> (see also ‘Mandatory tools’ <a href="https://mac.r-project.org/tools/" class="external-link">here</a>). On Linux, the gfortran compiler is usually installed already.</p>
+<p>Vignettes are not rendered by default, if you want to include additional documentation please use:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"geco-bern/rsofun"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"rsofun"</span><span class="op">)</span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="analysis-usage">Analysis usage<a class="anchor" aria-label="anchor" href="#analysis-usage"></a>
+</h2>
+<p>The <a href="https://github.com/stineb/rsofundemo/tree/main/analysis" class="external-link">00_validation_files_creation.R</a> file creates the validation data necessary to run the P-model. The driver data can be obatined from <a href="https://github.com/geco-bern/FluxDataKit/tree/main/data" class="external-link">FluxDatakit</a>. the files will be stoted in <a href="https://github.com/stineb/rsofundemo/tree/main/data" class="external-link">data</a>.</p>
+<p>The file will use two custom function that can be found in <a href="https://github.com/stineb/rsofundemo/tree/main/R" class="external-link">R</a>. To work it requires the path for each file needed and an output path to store the results.</p>
+<p>to run the script, you need to use the repository <a href="https://github.com/geco-bern/FluxDataKit/tree/main" class="external-link">FLuxDataKit</a> to create the files that are needed. The metadata file is already present in <a href="https://github.com/stineb/rsofundemo/tree/main/data-raw" class="external-link">data-raw</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="p-model-use">P-model Use<a class="anchor" aria-label="anchor" href="#p-model-use"></a>
+</h2>
+<p>Below sections show the ease of use of the package in terms of model parameter specification and running both a single run or optimizing the parameters for a given site. For an in depth discussion we refer to the <a href="https://geco-bern.github.io/rsofun/articles/" class="external-link">vignettes</a>.</p>
 <div class="section level3">
-<h3 id="the-data-raw-folder">The data-raw folder<a class="anchor" aria-label="anchor" href="#the-data-raw-folder"></a>
+<h3 id="running-model">Running model<a class="anchor" aria-label="anchor" href="#running-model"></a>
 </h3>
-<p>The <code>data-raw</code> folder contains, as the name suggests, raw data and the scripts to download and pre-process the data. This is data which requires significant pre-processing to be of use in analysis. In other words, this data is not analysis ready (within the context of the project).</p>
-<p>To create full transparency in terms of the source of this raw data it is best to include (numbered) scripts to download and pre-process the data. Either in these scripts, or in a separate README, include the source of the data (reference) Ultimately, the output of the workflow in data-raw is data which is analysis ready.</p>
-<p>It is best practice to store various raw data products in their own sub-folder, with data downloading and processing scripts in the main <code>data-raw</code> folder.</p>
-<pre><code>data-raw/
-├─ raw_data_product/
-├─ 00_download_raw_data.R
-├─ 01_process_raw_data.R</code></pre>
-<p>Where possible it is good practice to store output data (in <code>data</code>) either as human readable CSV files, or as R serialized files (generated using with the <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS()</a></code> function).</p>
-<p>It is common that raw data is large in size, which limits the option of storing the data in a git repository. If this isn’t possible this data can be excluded from the git repository by explicitly adding directories to <code>.gitignore</code> to avoid accidentally adding them.</p>
-<p>When dealing with heterogeneous systems dynamic paths can be set to (soft) link to raw-data outside the project directory.</p>
+<p>With all data prepared we can run the P-model using <code>runread_pmodel_f()</code>. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific strucutre explained in <code>p_model_drivers</code> documentation. You can use either the <code>p_model_drivers</code> and <code>p_model_validation</code> or use the driver data downloaded previously. The validation data can be obtainted from <a href="https://github.com/stineb/rsofundemo/tree/main/analysis" class="external-link">00_validation_files_creation.R</a>. The last two data can be loaded using <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code>.</p>
 </div>
-<div class="section level3">
-<h3 id="the-data-folder">The data folder<a class="anchor" aria-label="anchor" href="#the-data-folder"></a>
-</h3>
-<p>The <code>data</code> folder contains analysis ready data. This is data which you can use, as is. This often contains the output of a <code>data-raw</code> pre-processing workflow, but can also include data which doesn’t require any intervention, e.g. a land cover map which is used as-is. Output from <code>data-raw</code> often undergoes a dramatic dimensionality reduction and will often fit github file size limits. In some cases however some data products will still be too large, it is recommended to use similar practices as describe for <code>data-raw</code> to ensure transparency on the sourcing of this data (and reproducible acquisition).</p>
-<p>It is best to store data in transparently named sub-folders according to the product type, once more including references to the source of the data where possible. Once more, download scripts can be used to ensure this transparency as well.</p>
-<pre><code>data/
-├─ data_product/
-├─ 00_download_data.R</code></pre>
 </div>
-<div class="section level3">
-<h3 id="the-analysis-folder">The analysis folder<a class="anchor" aria-label="anchor" href="#the-analysis-folder"></a>
-</h3>
-<p>The <code>analysis</code> folder contains, <em>surprise</em>, R scripts covering analysis of your analysis ready data (in the <code>data</code> folder). These are R scripts with output which is limited to numbers, tables and figures. It should not include R markdown code!</p>
-<p>It is often helpful to create additional sub-folders for statistics and figures, especially if figures are large and complex (i.e. visualizations, rather than graphical representations of statistical properties, such as maps).</p>
-<p>Scripts can have a numbered prefix to indicate an order of execution, but this is generally less important as you will work on analysis ready data. If there is carry over between analysis, either merge the two files or use numbered prefixes.</p>
-<pre><code>analysis/
-├─ statistics/
-│  ├─ 00_random_forest_model.R
-│  ├─ 01_random_forest_tuning.R
-├─ figures/
-│  ├─ global_model_results_map.R
-│  ├─ complex_process_visualization.R</code></pre>
-<p>Output of the analysis routines can be written to file (<code>manuscript</code> folder) or visualized on the console or plot viewer panel.</p>
+<div class="section level2">
+<h2 id="running-model-1">Running model<a class="anchor" aria-label="anchor" href="#running-model-1"></a>
+</h2>
+<p>To run the model, is necessary to define the parameters that will be using during the analysis. The optimal parameters are alreday present in the vignette. With all data prepared we can run the P-model using <code>runread_pmodel_f()</code>. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. To have an in-depth description of the model output refers to <code>run_pmodel_f_bysite ()</code> documentation.</p>
 </div>
-<div class="section level3">
-<h3 id="the-manuscript-folder">The manuscript folder<a class="anchor" aria-label="anchor" href="#the-manuscript-folder"></a>
-</h3>
-<p>The <code>manuscript</code> folder contains a true working document often written in an external word processing software. It also, at times, contain the output of any analysis script, such as tables and rendered figures.</p>
-<p>Thee can be an R markdown file if for example suitable templates can be found in the <a href="https://pkgs.rstudio.com/rticles/" class="external-link"><code>rticles</code></a> R package to facilitate publication. However, the use of R markdown should be done with much care (see notes on the <code>vignettes</code> folder). As before, use sub-folders to organize this work neatly.</p>
+<div class="section level2">
+<h2 id="plotting-creation">Plotting creation<a class="anchor" aria-label="anchor" href="#plotting-creation"></a>
+</h2>
+<p>To show the result, a data frame containing all the sites is created. The plot will be stored as png file which can be found in <a href="https://github.com/stineb/rsofundemo/tree/main/fig" class="external-link">fig</a>.</p>
 </div>
-<div class="section level3">
-<h3 id="the-vignettes-folder">The vignettes folder<a class="anchor" aria-label="anchor" href="#the-vignettes-folder"></a>
-</h3>
-<p>The <code>vignettes</code> folder contains dynamic notebooks, i.e. R markdown files. These might serve a dual use between analysis and manuscript. However, the use case in reality should be considered very narrowly. In general, as they are commonly used, R markdown files are rarely portable. The argument that it is easy to share rendered html files is invalid if you adhere to an open workflow with github based snapshots. The latter ensures that all code is visible, all data is visible, and the project is truly reproducible. Furthermore, R markdown documents mix two cognitive tasks, writing text and writing code. Switching between these two modes comes with undue overhead. If you code, you should not be writing prose, and vise versa.</p>
-<p>Unless applied to small, educational, examples a markdown file has little place in a code heavy environment. In short, if your R markdown file contains more code than it does text, it should be considered an R script or function (with comments or documentation). Conversely, if your markdown file contains more text than code it probably is easier to collaborate on a true word processing file (or a Google Docs file). The use case where the notebooks might serve some importance is true reporting of general statistics.</p>
-<p>Finally, the use of R markdown also encourages bad project management practices. Most commonly this originates from the fact that rendering of the document is relative to the location of the document itself. If no session management tools such as the package <a href="https://here.r-lib.org/" class="external-link"><code>here</code></a> are used this automatically causes files to pile up in the top most level of a project, undoing most efforts to structure data and code. This is further compounded by the fact that there is a tendency to remain within the working environment (document), and therefore code blocks which should be functions are not translated as such.</p>
-<p>In short, R markdown files have their function in reporting results, once generated (through functions or analysis scripts) but should be avoided to develop code / ideas (see cognitive switching remark)!</p>
+<div class="section level2">
+<h2 id="calibrating-model-parameters">Calibrating model parameters<a class="anchor" aria-label="anchor" href="#calibrating-model-parameters"></a>
+</h2>
+<p>To optimize new parameters based upon driver data and a validation dataset we must first specify an optimization strategy and settings, as well as a cost function and parameter ranges.</p>
+<p><code>rsofun</code> supports both optimization using the <code>GenSA</code> and <code>BayesianTools</code> packages. The above statement provides settings for a <code>GenSA</code> optimization approach. For this example the maximum number of iterations is kept artificially low. In a real scenario you will have to increase this value orders of magnitude. Keep in mind that optimization routines rely on a cost function, which, depending on its structure influences parameter selection. A limited set of cost functions is provided but the model structure is transparent and custom cost functions can be easily written. More details can be found in the “Parameter calibration and cost functions” vignette.</p>
+<p>In addition starting values and ranges are provided for the free parameters in the model. Free parameters include: parameters for the quantum yield efficiency <code>kphio</code>, <code>kphio_par_a</code> and <code>kphio_par_b</code>, soil moisture stress parameters <code>soilm_thetastar</code> and <code>soilm_betao</code>, and also <code>beta_unitcostratio</code>, <code>rd_to_vcmax</code>, <code>tau_acclim</code> and <code>kc_jmax</code> (see <code>?runread_pmodel_f</code>). Be mindful that with newer versions of <code>rsofun</code> additional parameters might be introduced, so re-check vignettes and function documentation when updating existing code.</p>
+<p>With all settings defined the optimization function <code>calib_sofun()</code> can be called with driver data and observations specified. Extra arguments for the cost function (like what variable should be used as target to compute the root mean squared error (RMSE) and previous values for the parameters that aren’t calibrated, which are needed to run the P-model).</p>
+<p>The updated model will yield better result. The model will run in the same way as the non calibrated p model.</p>
 </div>
-<div class="section level3">
-<h3 id="capturing-your-session-state">Capturing your session state<a class="anchor" aria-label="anchor" href="#capturing-your-session-state"></a>
-</h3>
-<p>If you want to ensure full reproducibility you will need to capture the state of the system and libraries with which you ran the original analysis. Note that you will have to execute all code and required libraries for <code>renv</code> to correctly capture all used libraries.</p>
-<p>When setting up your project you can run:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Initiate a {renv} environment</span></span>
-<span><span class="fu">renv</span><span class="fu">::</span><span class="fu">init</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>To initiate your static R environment. Whenever you want to save the state of your project (and its packages) you can call:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Save the current state of the environment / project</span></span>
-<span><span class="fu">renv</span><span class="fu">::</span><span class="fu">snapshot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>To save any changes made to your environment. All data will be saved in a project description file called a lock file (i.e. <code>renv.lock</code>). It is advised to update the state of your project regularly, and in particular before closing a project.</p>
-<p>When you move your project to a new system, or share a project on github with collaborators, you can revert to the original state of the analysis by calling:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># On a new system, or when inheriting a project</span></span>
-<span><span class="co"># from a collaborator you can use a lock file</span></span>
-<span><span class="co"># to restore the session/project state using</span></span>
-<span><span class="fu">renv</span><span class="fu">::</span><span class="fu">restore</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<blockquote>
-<p>NOTE: As mentioned in the {renv} documentation: “For development and collaboration, the <code>.Rprofile</code>, <code>renv.lock</code> and <code>renv/activate.R</code> files should be committed to your version control system. But the <code>renv/library</code> directory should normally be ignored. Note that <code>renv::init()</code> will attempt to write the requisite ignore statements to the project <code>.gitignore</code>.” We refer to @ref(learning-objectives-6) for details on github and its use.</p>
-</blockquote>
+<div class="section level2">
+<h2 id="updating-the-plot-dataframe">Updating the plot dataframe<a class="anchor" aria-label="anchor" href="#updating-the-plot-dataframe"></a>
+</h2>
+<p>After the calibration is possible to update the plot dataframe by adding the parameterized output and the plot will be stored as png file.</p>
 </div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Stocker, B. D., Wang, H., Smith, N. G., Harrison, S. P., Keenan, T. F., Sandoval, D., Davis, T., and Prentice, I. C.: P-model v1.0: an optimality-based light use efficiency model for simulating ecosystem gross primary production, Geosci. Model Dev., 13, 1545–1581, <a href="https://doi.org/10.5194/gmd-13-1545-2020" class="external-link uri">https://doi.org/10.5194/gmd-13-1545-2020</a>, 2020.</p>
+<p>For details on the optimization settings we refer to the manuals of <a href="https://cran.r-project.org/package=GenSA" class="external-link">GenSA</a> and <a href="https://github.com/florianhartig/BayesianTools" class="external-link">BayesianTools</a>.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+    <div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/stineb/rsofundemo/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/stineb/rsofundemo/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.r-project.org/Licenses/AGPL-3" class="external-link">AGPL-3</a></li>
@@ -223,14 +198,14 @@
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing RTemplate</a></li>
+<li><a href="authors.html#citation">Citing rsofundemo</a></li>
 </ul>
 </div>
 
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>John Doe <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0000-0000-0000" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Benjamin Stocker <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2697-9096" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
