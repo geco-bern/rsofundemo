@@ -8,26 +8,29 @@ All demonstration workflows are implemented as vignettes in `./vignettes/` and d
 
 ### Stable release
 
-**WARNING: rsofun is not currently available on CRAN.** We're working on it. Until it's available again, the command below will not work.
+rsofun is currently available on CRAN and the latest release can be installed with:
 
 ``` r
 install.packages("rsofun")
 library("rsofun")
 ```
 
-### Development release
+### Development release and older releases
 
-To install the development releases of the package run the following commands:
+To install the development version or any [older released version](https://github.com/geco-bern/rsofun/releases) of the package from GitHub run one of the following commands:
 
 ``` r
 if(!require(remotes)){install.packages("remotes")}
-remotes::install_github("geco-bern/rsofun")
+remotes::install_github("geco-bern/rsofun") # for the latest development release
+# remotes::install_github("geco-bern/rsofun", ref = "v5.1.0") # will always be v5.1.0
+# remotes::install_github("geco-bern/rsofun", ref = "v4.4") # will always be v4.4
+
 library("rsofun")
 ```
 
 ### Install manually
 
-If none of the previously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases/tag/v4.4) and use the command
+If none of the previously mention installation works, download the tar.gz folder from [here](https://github.com/geco-bern/rsofun/releases) and use the command
 
 ``` r
 install.packages(path_to_file, repos = NULL, type="source")
@@ -58,12 +61,13 @@ Below sections show the ease of use of the package in terms of model parameter s
 
 ### Running model
 
-With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific strucutre explained in `p_model_drivers` documentation.
-You can use either the `p_model_drivers` and `p_model_validation` or use the driver data downloaded previously. The validation data can be obtainted from  [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis). The last two data can be loaded using `readRDS()`.
+With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific structure explained in `p_model_drivers` documentation.
+You can use either the `p_model_drivers` and `p_model_validation` or use the driver data downloaded previously. The validation data can be obtained from  [00_validation_files_creation.R](https://github.com/stineb/rsofundemo/tree/main/analysis). The last two data can be loaded using `readRDS()`.
+Depending on the exact version of `rsofun` these examples files might be called `pmodel_drivers` and `pmodel_validation`.
 
 ## Running model
 
-To run the model, is necessary to define the parameters that will be using during the analysis. The optimal parameters are alreday present in the vignette.
+To run the model, is necessary to define the parameters that will be using during the analysis. The optimal parameters are already present in the vignette.
 With all data prepared we can run the P-model using `runread_pmodel_f()`. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers.
 To have an in-depth description of the model output refers to `run_pmodel_f_bysite ()` documentation.
 
