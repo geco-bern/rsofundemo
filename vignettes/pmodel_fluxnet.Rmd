@@ -88,10 +88,14 @@ driver |>
 ```
 
 ```{r eval=FALSE, echo=FALSE}
+# NOTE: code in this cell is hidden on the webpage. It is needed to render the webpage.
+# DO NOT RUN IT MANUALLY.
 ggsave(here("man/figures/missingdata.png"), width = 6, height = 4)
 ```
 
 ```{r out.width="800px", fig.retina = 1, echo=FALSE}
+# NOTE: code in this cell is hidden on the webpage. It is needed to render the webpage.
+# DO NOT RUN IT MANUALLY.
 knitr::include_graphics(here("man/figures/missingdata.png"))
 ```
 
@@ -180,10 +184,14 @@ df |>
 ```
 
 ```{r eval=FALSE, echo=FALSE}
+# NOTE: code in this cell is hidden on the webpage. It is needed to render the webpage.
+# DO NOT RUN IT MANUALLY.
 ggsave(here("man/figures/gpp_mod_obs_frpue.png"), width = 6, height = 4)
 ```
 
 ```{r out.width="800px", fig.retina = 1, echo=FALSE}
+# NOTE: code in this cell is hidden on the webpage. It is needed to render the webpage.
+# DO NOT RUN IT MANUALLY.
 knitr::include_graphics(here("man/figures/gpp_mod_obs_frpue.png"))
 ```
 
@@ -251,10 +259,14 @@ adf_eval |>
   )
 ```
 ```{r eval=FALSE, echo=FALSE}
+# NOTE: code in this cell is hidden on the webpage. It is needed to render the webpage.
+# DO NOT RUN IT MANUALLY.
 ggsave(here("man/figures/gpp_mod_obs_ann.png"), width = 6, height = 4)
 ```
 
 ```{r out.width="800px", fig.retina = 1, echo=FALSE}
+# NOTE: code in this cell is hidden on the webpage. It is needed to render the webpage.
+# DO NOT RUN IT MANUALLY.
 knitr::include_graphics(here("man/figures/gpp_mod_obs_ann.png"))
 ```
 
