@@ -52,10 +52,31 @@ The model driver object is constructed from data collected and processed (unit c
 
 *Hufkens, K., & Stocker, B. (2024). FluxDataKit v3.1: A comprehensive data set of ecosystem fluxes for land surface modelling (3.1) [Data set]. Zenodo. https://doi.org/10.5281/zenodo.11370417*
 
-Download the file `rsofun_driver_data_v3.1.rds` and place it locally. It is not included in the repository *rsofundemo*. Read it, pointing to its local path:
+Download the files `rsofun_driver_data_v3.1.rds`, `fdk_site_info.csv`, and `fdk_site_fullyearsequence.csv` and place them locally. 
+They are not included in the repository *rsofundemo*. 
+You can do the download manually and then read the files into your R session, pointing to their local path.
+Alternatively, use the package `zen4R` to download. Both variants are shown below:
 
 ```{r eval=FALSE}
+# Variant 1) load the manually downloaded file:
 driver <- readRDS("~/data/FluxDataKit/v3.2/rsofun_driver_data_v3.2.rds")
+fdk_site_info <- tibble(read.csv("~/data/FluxDataKit/v3.2/fdk_site_info.csv"))
+fdk_site_fullyearsequence <- tibble(read.csv("~/data/FluxDataKit/v3.2/fdk_site_fullyearsequence.csv"))
+
+# Variant 2) or automatically download and load the file:
+library(zen4R) # install.packages("zen4R")
+download_path <- tempdir()
+zen4R::download_zenodo(
+  path = download_path, 
+  "10.5281/zenodo.12092555",
+  files = c("rsofun_driver_data_v3.2.rds",
+            "fdk_site_info.csv", 
+            "fdk_site_fullyearsequence.csv")
+)
+
+driver <- readRDS(file.path(download_path, "rsofun_driver_data_v3.2.rds"))
+fdk_site_info <- tibble(read.csv(file.path(download_path, "fdk_site_info.csv")))
+fdk_site_fullyearsequence <- tibble(read.csv(file.path(download_path, "fdk_site_fullyearsequence.csv")))
 ```
 
 Check for missing values in the forcing data.
@@ -171,10 +192,10 @@ knitr::include_graphics(here("man/figures/gpp_mod_obs_frpue.png"))
 To get annual totals and compare it to observations, we need to consider complete sequences of good-quality observations. We can use information from FluxDataKit for that purpose.
 
 ```{r eval=FALSE}
-sites <- FluxDataKit::fdk_site_info |>
+sites <- fdk_site_info |>
   dplyr::filter(!(igbp_land_use %in% c("CRO", "WET"))) |> 
   left_join(
-    FluxDataKit::fdk_site_fullyearsequence,
+    fdk_site_fullyearsequence,
     by = "sitename"
   ) |> 
   filter(!drop_gpp)
