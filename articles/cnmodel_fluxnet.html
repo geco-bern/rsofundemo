@@ -19,12 +19,10 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><!-- geco --><link href="../geco.css" rel="stylesheet">
 <meta property="og:title" content="C-only and CN-model at a FLUXNET site">
-<meta property="og:description" content="rsofundemo">
-<meta name="twitter:card" content="summary">
 <!-- Mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js" async integrity="sha256-nlrDrBTHxJJlDDX22AS33xYI1OJHnGMDhiYMSe2U0e0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/config/TeX-AMS-MML_HTMLorMML.js" async integrity="sha256-4zys9A4hMQmtq2EUL+JRoXc0NZi8jVJMzb8onewOaSQ=" crossorigin="anonymous"></script>
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -58,7 +56,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -73,7 +71,7 @@
         <li>
   <a href="https://github.com/stineb/rsofundemo/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -84,7 +82,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -94,7 +92,7 @@
 Stocker</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/stineb/rsofundemo/blob/HEAD/vignettes/cnmodel_fluxnet.Rmd" class="external-link"><code>vignettes/cnmodel_fluxnet.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/stineb/rsofundemo/blob/main/vignettes/cnmodel_fluxnet.Rmd" class="external-link"><code>vignettes/cnmodel_fluxnet.Rmd</code></a></small>
       <div class="hidden name"><code>cnmodel_fluxnet.Rmd</code></div>
 
     </div>
@@ -128,7 +126,7 @@ Install it from there.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">remotes</span><span class="op">)</span><span class="op">}</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"stineb/rsofun"</span>, ref <span class="op">=</span> <span class="st">"cnmodel"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">rsofun</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/geco-bern/rsofun" class="external-link">rsofun</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="forcing-data">Forcing data<a class="anchor" aria-label="anchor" href="#forcing-data"></a>
@@ -157,7 +155,7 @@ Read it, pointing to its local path, and subset to the desired site.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">sitename</span>, <span class="va">forcing</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html" class="external-link">unnest</a></span><span class="op">(</span><span class="va">forcing</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://docs.ropensci.org/visdat/reference/vis_miss.html" class="external-link">vis_miss</a></span><span class="op">(</span>warn_large_data <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/missingdata_choe2.png" width="800px"></p>
+<p><img src="../reference/figures/missingdata_choe2.png" class="r-plt" width="800px"></p>
 <p>We see that some variables have missing data. Net radiation being
 missing is not a problem as it is currently internally estimated and not
 taken from the forcing.</p>
@@ -351,8 +349,8 @@ all) explained in Stocker &amp; Prentice (2024) <em>biorxiv</em>.</p>
 <p>Before running the model, we need to create an output directory for
 soil C.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mkdir "</span>, <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/out"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mkdir "</span>, <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="st">"vignettes"</span><span class="op">)</span>, <span class="st">"/out"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mkdir "</span>, <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org/reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/out"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"mkdir "</span>, <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org/reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="st">"vignettes"</span><span class="op">)</span>, <span class="st">"/out"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="c-only-run">C-only run<a class="anchor" aria-label="anchor" href="#c-only-run"></a>
 </h3>
@@ -418,16 +416,14 @@ drivers.</p>
 <span>  <span class="va">gg4</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="../reference/figures/outputs_cnmodel_tseries.png" width="800px"></p>
+<p><img src="../reference/figures/outputs_cnmodel_tseries.png" class="r-plt" width="800px"></p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -475,10 +471,10 @@ drivers.</p>
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
