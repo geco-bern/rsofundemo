@@ -99,24 +99,27 @@
 <div class="section level3">
 <h3 id="stable-release">Stable release<a class="anchor" aria-label="anchor" href="#stable-release"></a>
 </h3>
-<p><strong>WARNING: rsofun is not currently available on CRAN.</strong> We’re working on it. Until it’s available again, the command below will not work.</p>
+<p>rsofun is currently available on CRAN and the latest release can be installed with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rsofun"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/geco-bern/rsofun" class="external-link">"rsofun"</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="development-release">Development release<a class="anchor" aria-label="anchor" href="#development-release"></a>
+<h3 id="development-release-and-older-releases">Development release and older releases<a class="anchor" aria-label="anchor" href="#development-release-and-older-releases"></a>
 </h3>
-<p>To install the development releases of the package run the following commands:</p>
+<p>To install the development version or any <a href="https://github.com/geco-bern/rsofun/releases" class="external-link">older released version</a> of the package from GitHub run one of the following commands:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"geco-bern/rsofun"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"geco-bern/rsofun"</span><span class="op">)</span> <span class="co"># for the latest development release</span></span>
+<span><span class="co"># remotes::install_github("geco-bern/rsofun", ref = "v5.1.0") # will always be v5.1.0</span></span>
+<span><span class="co"># remotes::install_github("geco-bern/rsofun", ref = "v4.4") # will always be v4.4</span></span>
+<span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/geco-bern/rsofun" class="external-link">"rsofun"</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="install-manually">Install manually<a class="anchor" aria-label="anchor" href="#install-manually"></a>
 </h3>
-<p>If none of the previously mention installation works, download the tar.gz folder from <a href="https://github.com/geco-bern/rsofun/releases/tag/v4.4" class="external-link">here</a> and use the command</p>
+<p>If none of the previously mention installation works, download the tar.gz folder from <a href="https://github.com/geco-bern/rsofun/releases" class="external-link">here</a> and use the command</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">path_to_file</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/geco-bern/rsofun" class="external-link">"rsofun"</a></span><span class="op">)</span></span></code></pre></div>
@@ -142,13 +145,13 @@
 <div class="section level3">
 <h3 id="running-model">Running model<a class="anchor" aria-label="anchor" href="#running-model"></a>
 </h3>
-<p>With all data prepared we can run the P-model using <code>runread_pmodel_f()</code>. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific strucutre explained in <code>p_model_drivers</code> documentation. You can use either the <code>p_model_drivers</code> and <code>p_model_validation</code> or use the driver data downloaded previously. The validation data can be obtainted from <a href="https://github.com/stineb/rsofundemo/tree/main/analysis" class="external-link">00_validation_files_creation.R</a>. The last two data can be loaded using <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code>.</p>
+<p>With all data prepared we can run the P-model using <code>runread_pmodel_f()</code>. This function takes the nested data structure and runs the model for each site separately, returning nested model output results matching the input drivers. The data structure needs to have a specific structure explained in <code>p_model_drivers</code> documentation. You can use either the <code>p_model_drivers</code> and <code>p_model_validation</code> or use the driver data downloaded previously. The validation data can be obtained from <a href="https://github.com/stineb/rsofundemo/tree/main/analysis" class="external-link">00_validation_files_creation.R</a>. The last two data can be loaded using <code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS()</a></code>. Depending on the exact version of <code>rsofun</code> these examples files might be called <code>pmodel_drivers</code> and <code>pmodel_validation</code>.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="running-model-1">Running model<a class="anchor" aria-label="anchor" href="#running-model-1"></a>
 </h2>
-<p>To run the model, is necessary to define the parameters that will be using during the analysis. The optimal parameters are alreday present in the vignette. With all data prepared we can run the P-model using <code>runread_pmodel_f()</code>. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. To have an in-depth description of the model output refers to <code>run_pmodel_f_bysite ()</code> documentation.</p>
+<p>To run the model, is necessary to define the parameters that will be using during the analysis. The optimal parameters are already present in the vignette. With all data prepared we can run the P-model using <code>runread_pmodel_f()</code>. This function takes the nested data structure and runs the model site by site, returning nested model output results matching the input drivers. To have an in-depth description of the model output refers to <code>run_pmodel_f_bysite ()</code> documentation.</p>
 </div>
 <div class="section level2">
 <h2 id="plotting-creation">Plotting creation<a class="anchor" aria-label="anchor" href="#plotting-creation"></a>
