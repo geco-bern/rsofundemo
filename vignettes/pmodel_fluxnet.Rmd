@@ -35,7 +35,7 @@ The model can also be used for arbitrary locations for which forcing data is gen
 ```{r}
 # geco-bern packages not on CRAN
 if(!require(remotes)){install.packages(remotes)}
-remotes::install_github("geco-bern/rsofun")
+remotes::install_github("geco-bern/rsofun", ref = "v5.1.0")
 library(rsofun)
 ```
 
